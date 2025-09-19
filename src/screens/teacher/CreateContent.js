@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Card, Input, Button, Modal } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -8,6 +7,8 @@ import { TEXT_STYLES } from '../../constants/typography';
 import { validateQuestion, generateId, shuffleArray } from '../../utils/helpers';
 import { saveGame } from '../../utils/storage';
 import { useApp } from '../../context/AppContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const CreateContent = ({ navigation }) => {
   const { teacherData } = useApp();
@@ -44,7 +45,7 @@ const CreateContent = ({ navigation }) => {
 
   const subjects = ['Mathematics', 'Science', 'English', 'Hindi', 'Social Studies', 'Physics', 'Chemistry', 'Biology'];
   const grades = ['6', '7', '8', '9', '10', '11', '12'];
-  const difficulties = ['Easy', 'Medium', 'Hard'];
+  const difficulties = ['Easy',  'Hard','Medium',];
   const timeOptions = ['5-10 min', '10-15 min', '15-20 min', '20-30 min'];
 
   useEffect(() => {
@@ -430,7 +431,7 @@ const CreateContent = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Create Content"
         subtitle={`Step ${step} of 3 • ${gameType === 'matching' ? 'Matching Game' : 'Block Blast Game'}`}
@@ -472,7 +473,7 @@ const CreateContent = ({ navigation }) => {
                 style={[styles.gameTypeButton, gameType === 'matching' && styles.gameTypeButtonActive]}
                 onPress={() => setGameType('matching')}
               >
-                <Text style={styles.gameTypeIcon}>🎯</Text>
+                <Icon name="drag-indicator" size={32} color={gameType === 'matching' ? COLORS.gamePurple : COLORS.textSecondary} />
                 <Text style={[styles.gameTypeText, gameType === 'matching' && styles.gameTypeTextActive]}>
                   Matching Game
                 </Text>
@@ -485,7 +486,7 @@ const CreateContent = ({ navigation }) => {
                 style={[styles.gameTypeButton, gameType === 'blockblast' && styles.gameTypeButtonActive]}
                 onPress={() => setGameType('blockblast')}
               >
-                <Text style={styles.gameTypeIcon}>🧩</Text>
+                <MaterialCommunityIcons name="puzzle" size={32} color={gameType === 'blockblast' ? COLORS.gamePurple : COLORS.textSecondary} />
                 <Text style={[styles.gameTypeText, gameType === 'blockblast' && styles.gameTypeTextActive]}>
                   Block Blast Game
                 </Text>
@@ -511,13 +512,18 @@ const CreateContent = ({ navigation }) => {
                   value={gameInfo.title}
                   onChangeText={(text) => updateGameInfo('title', text)}
                   error={gameInfoErrors.title}
-                  leftIcon={<Text style={styles.inputIcon}>🎮</Text>}
+                  leftIcon={<Icon name="gamepad" size={18} color={COLORS.primary} />}
                 />
                 
                 <View style={styles.row}>
                   <View style={styles.halfWidth}>
                     <Text style={styles.pickerLabel}>Subject *</Text>
-                    <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                    <ScrollView 
+                      horizontal 
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.subjectScrollContainer}
+                      style={styles.subjectScrollView}
+                    >
                       {subjects.map((subject) => (
                         <TouchableOpacity
                           key={subject}
@@ -601,7 +607,7 @@ const CreateContent = ({ navigation }) => {
                   error={gameInfoErrors.description}
                   multiline
                   numberOfLines={3}
-                  leftIcon={<Text style={styles.inputIcon}>📝</Text>}
+                  leftIcon={<Icon name="description" size={18} color={COLORS.primary} />}
                 />
                 
                 <View style={styles.timeSection}>
@@ -672,13 +678,13 @@ const CreateContent = ({ navigation }) => {
                             onPress={() => handleEditQuestion(index)}
                             style={styles.questionActionButton}
                           >
-                            <Text style={styles.questionActionText}>✏️</Text>
+                            <Icon name="edit" size={16} color={COLORS.primary} />
                           </TouchableOpacity>
                           <TouchableOpacity
                             onPress={() => handleDeleteQuestion(index)}
                             style={styles.questionActionButton}
                           >
-                            <Text style={styles.questionActionText}>🗑️</Text>
+                            <Icon name="delete" size={16} color={COLORS.error} />
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -707,7 +713,7 @@ const CreateContent = ({ navigation }) => {
                     error={questionErrors.question}
                     multiline
                     numberOfLines={2}
-                    leftIcon={<Text style={styles.inputIcon}>❓</Text>}
+                    leftIcon={<Icon name="help-outline" size={18} color={COLORS.primary} />}
                   />
                   
                   <View style={styles.optionsSection}>
@@ -752,7 +758,7 @@ const CreateContent = ({ navigation }) => {
                     onChangeText={(text) => updateCurrentQuestion('explanation', text)}
                     multiline
                     numberOfLines={2}
-                    leftIcon={<Text style={styles.inputIcon}>💡</Text>}
+                    leftIcon={<Icon name="lightbulb-outline" size={18} color={COLORS.primary} />}
                   />
                   
                   <Button
@@ -876,7 +882,7 @@ const CreateContent = ({ navigation }) => {
             style={styles.templateOption}
             onPress={() => loadTemplate('mathBasic')}
           >
-            <Text style={styles.templateIcon}>🔢</Text>
+            <MaterialCommunityIcons name="calculator" size={32} color={COLORS.primary} />
             <View style={styles.templateText}>
               <Text style={styles.templateTitle}>Basic Math</Text>
               <Text style={styles.templateDescription}>Arithmetic and number patterns (5 questions)</Text>
@@ -887,7 +893,7 @@ const CreateContent = ({ navigation }) => {
             style={styles.templateOption}
             onPress={() => loadTemplate('scienceBasic')}
           >
-            <Text style={styles.templateIcon}>🧪</Text>
+            <MaterialCommunityIcons name="flask" size={32} color={COLORS.primary} />
             <View style={styles.templateText}>
               <Text style={styles.templateTitle}>Science Basics</Text>
               <Text style={styles.templateDescription}>Fundamental science concepts (5 questions)</Text>
@@ -898,7 +904,7 @@ const CreateContent = ({ navigation }) => {
             style={styles.templateOption}
             onPress={() => loadTemplate('englishBasic')}
           >
-            <Text style={styles.templateIcon}>📚</Text>
+            <MaterialCommunityIcons name="book-open" size={32} color={COLORS.primary} />
             <View style={styles.templateText}>
               <Text style={styles.templateTitle}>English Grammar</Text>
               <Text style={styles.templateDescription}>Basic grammar and vocabulary (5 questions)</Text>
@@ -953,14 +959,14 @@ const CreateContent = ({ navigation }) => {
           </View>
         </ScrollView>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.teacherBackground,
   },
   
   scrollView: {
@@ -1141,6 +1147,8 @@ const styles = StyleSheet.create({
     marginRight: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
+    minWidth: 80, // Ensure minimum width
+    alignItems: 'center',
   },
   
   pickerChipActive: {
@@ -1193,18 +1201,21 @@ const styles = StyleSheet.create({
   
   difficultySelector: {
     flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: SPACING.sm,
   },
   
   difficultyChip: {
     backgroundColor: COLORS.surface,
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
     borderRadius: 20,
     marginRight: SPACING.sm,
     borderWidth: 1,
     borderColor: COLORS.border,
-    flex: 1,
+    // flex: 1,
     alignItems: 'center',
+    width:'max-content',
   },
   
   difficultyChipActive: {
@@ -1215,6 +1226,7 @@ const styles = StyleSheet.create({
   difficultyChipText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.textSecondary,
+    whiteSpace: 'nowrap',
   },
   
   difficultyChipTextActive: {
@@ -1537,6 +1549,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontStyle: 'italic',
     marginTop: SPACING.lg,
+  },
+  
+  subjectScrollView: {
+    flexGrow: 0,
+  },
+  
+  subjectScrollContainer: {
+    paddingRight: SPACING.lg, // Add padding at the end
+    alignItems: 'center',
   },
 });
 

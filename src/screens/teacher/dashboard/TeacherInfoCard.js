@@ -1,34 +1,40 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
-import { SPACING } from '../../constants/layout';
-import { TEXT_STYLES } from '../../constants/typography';
+import { SPACING } from '../../../constants/layout';
+import { TEXT_STYLES } from '../../../constants/typography';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
-const StudentInfoCard = ({ studentData, totalScore }) => {
+const TeacherInfoCard = ({ teacherData, dashboardData }) => {
   return (
     <View style={styles.cardWrapper}>
-      <View style={styles.studentCard}>
+      <View style={styles.teacherCard}>
         {/* Highlight overlay for 3D effect */}
         <View style={styles.highlight} />
         
-        <View style={styles.studentContent}>
-          <View style={styles.studentInfo}>
-            <Text style={styles.studentName}>
-              {studentData?.name || 'Student'}
+        <View style={styles.teacherContent}>
+          <View style={styles.teacherInfo}>
+            <Text style={styles.teacherName}>
+              {teacherData?.name || 'Teacher'}
             </Text>
             
-            <Text style={styles.studentDetails}>
-              Grade {studentData?.grade} • {studentData?.className}
+            <Text style={styles.teacherDetails}>
+              {teacherData?.schoolName || 'School Name'}
             </Text>
             
-            {totalScore !== undefined && (
-              <View style={styles.scoreContainer}>
-                <Icon name="star" size={16} color="rgba(255, 255, 255, 0.95)" style={styles.scoreIcon} />
-                <Text style={styles.scoreText}>
-                  Score: {totalScore}
+            <View style={styles.statsContainer}>
+              <View style={styles.statItem}>
+                <Icon name="school" size={16} color="rgba(255, 255, 255, 0.95)" style={styles.statIcon} />
+                <Text style={styles.statText}>
+                  {dashboardData?.totalClasses || 0} Classes
                 </Text>
               </View>
-            )}
+              <View style={styles.statItem}>
+                <Icon name="people" size={16} color="rgba(255, 255, 255, 0.95)" style={styles.statIcon} />
+                <Text style={styles.statText}>
+                  {dashboardData?.totalStudents || 0} Students
+                </Text>
+              </View>
+            </View>
           </View>
         </View>
         
@@ -39,7 +45,7 @@ const StudentInfoCard = ({ studentData, totalScore }) => {
       {/* Avatar image coming out of the card */}
       <View style={styles.avatarContainer}>
         <Image 
-         source={require('../../../android/app/src/main/assets/imgs/student.png')}
+          source={require('../../../../android/app/src/main/assets/imgs/teacher.png')}
           defaultSource={{ uri: 'https://www.avatarsinpixels.com/minipix/5/175831079622519/avatar.png' }}
           style={styles.avatarImage}
           resizeMode="contain"
@@ -53,18 +59,15 @@ const styles = StyleSheet.create({
   cardWrapper: {
     marginTop: SPACING.lg,
     marginBottom: SPACING.xl,
-    // borderBottomWidth: 7,
-    // borderBottomColor: '#b1b1b186',
-    // borderRadius: 20,
     position: 'relative',
   },
   
-  studentCard: {
-    backgroundColor: '#3e5d45ff',
+  teacherCard: {
+    backgroundColor: '#4a5bb8',
     borderRadius: 15,
     borderWidth: 4,
     borderColor: '#000000ff',
-    shadowColor: '#28a745',
+    shadowColor: '#4a5bb8',
     shadowOffset: {
       width: 0,
       height: 8,
@@ -77,7 +80,7 @@ const styles = StyleSheet.create({
     marginLeft: 60, // Make more space for the bigger avatar
   },
 
-  studentContent: {
+  teacherContent: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
@@ -103,15 +106,14 @@ const styles = StyleSheet.create({
     borderWidth: 4,
     borderColor: '#000000ff',
     backgroundColor: '#fff',
-  
   },
 
-  studentInfo: {
+  teacherInfo: {
     flex: 1,
     alignItems: 'center',
   },
 
-  studentName: {
+  teacherName: {
     ...TEXT_STYLES.heading,
     color: 'rgba(255, 255, 255, 0.95)',
     textAlign: 'center',
@@ -122,7 +124,7 @@ const styles = StyleSheet.create({
     textShadowRadius: 2,
   },
 
-  studentDetails: {
+  teacherDetails: {
     ...TEXT_STYLES.bodySmall,
     color: 'rgba(255, 255, 255, 0.9)',
     textAlign: 'center',
@@ -133,23 +135,29 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
-  scoreContainer: {
+  statsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+  },
+
+  statItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: SPACING.sm,
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
     backgroundColor: 'rgba(255, 255, 255, 0.15)',
-    borderRadius: 20,
+    borderRadius: 15,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.2)',
   },
 
-  scoreIcon: {
+  statIcon: {
     marginRight: SPACING.xs,
   },
 
-  scoreText: {
-    ...TEXT_STYLES.bodySmall,
+  statText: {
+    ...TEXT_STYLES.caption,
     color: 'rgba(255, 255, 255, 0.95)',
     fontWeight: 'bold',
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
@@ -158,6 +166,17 @@ const styles = StyleSheet.create({
   },
   
   // 3D Effect styles
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '60%',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    zIndex: 1,
+    borderTopLeftRadius: 11,
+    borderTopRightRadius: 11,
+  },
 
   // Inner shadow for depth
   innerShadow: {
@@ -173,4 +192,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default StudentInfoCard;
+export default TeacherInfoCard;

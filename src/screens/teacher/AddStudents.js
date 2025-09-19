@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Card, Input, Button, Modal } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -8,6 +7,8 @@ import { TEXT_STYLES } from '../../constants/typography';
 import { validatePhoneNumber, validateName, formatStudentName, generateId } from '../../utils/helpers';
 import { getClasses, addStudent, getStudents } from '../../utils/storage';
 import { useApp } from '../../context/AppContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const AddStudents = ({ navigation }) => {
   const { teacherData } = useApp();
@@ -316,7 +317,7 @@ const AddStudents = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Add Students"
         subtitle={selectedClass ? selectedClass.className : 'Select a class first'}
@@ -334,7 +335,7 @@ const AddStudents = ({ navigation }) => {
               style={styles.classSelector}
             >
               <View style={styles.classSelectorContent}>
-                <Text style={styles.classSelectorIcon}>🏫</Text>
+                <Icon name="school" size={32} color={COLORS.primary} style={styles.classSelectorIcon} />
                 <View style={styles.classSelectorText}>
                   <Text style={styles.classSelectorLabel}>Selected Class</Text>
                   <Text style={styles.classSelectorValue}>
@@ -360,7 +361,7 @@ const AddStudents = ({ navigation }) => {
                 style={[styles.modeButton, addMode === 'single' && styles.modeButtonActive]}
                 onPress={() => setAddMode('single')}
               >
-                <Text style={styles.modeButtonIcon}>👤</Text>
+                <Icon name="person" size={32} color={addMode === 'single' ? COLORS.background : COLORS.primary} />
                 <Text style={[styles.modeButtonText, addMode === 'single' && styles.modeButtonTextActive]}>
                   Single Student
                 </Text>
@@ -370,7 +371,7 @@ const AddStudents = ({ navigation }) => {
                 style={[styles.modeButton, addMode === 'bulk' && styles.modeButtonActive]}
                 onPress={() => setAddMode('bulk')}
               >
-                <Text style={styles.modeButtonIcon}>👥</Text>
+                <Icon name="groups" size={32} color={addMode === 'bulk' ? COLORS.background : COLORS.primary} />
                 <Text style={[styles.modeButtonText, addMode === 'bulk' && styles.modeButtonTextActive]}>
                   Bulk Add
                 </Text>
@@ -380,7 +381,7 @@ const AddStudents = ({ navigation }) => {
                 style={[styles.modeButton, addMode === 'excel' && styles.modeButtonActive]}
                 onPress={() => setAddMode('excel')}
               >
-                <Text style={styles.modeButtonIcon}>📊</Text>
+                <MaterialCommunityIcons name="microsoft-excel" size={32} color={addMode === 'excel' ? COLORS.background : COLORS.primary} />
                 <Text style={[styles.modeButtonText, addMode === 'excel' && styles.modeButtonTextActive]}>
                   Excel Upload
                 </Text>
@@ -403,7 +404,7 @@ const AddStudents = ({ navigation }) => {
                   value={singleStudentForm.name}
                   onChangeText={(text) => updateSingleStudentForm('name', text)}
                   error={singleStudentErrors.name}
-                  leftIcon={<Text style={styles.inputIcon}>👤</Text>}
+                  leftIcon={<Icon name="person" size={18} color={COLORS.primary} />}
                 />
                 
                 <Input
@@ -412,7 +413,7 @@ const AddStudents = ({ navigation }) => {
                   value={singleStudentForm.rollNumber}
                   onChangeText={(text) => updateSingleStudentForm('rollNumber', text)}
                   error={singleStudentErrors.rollNumber}
-                  leftIcon={<Text style={styles.inputIcon}>🔢</Text>}
+                  leftIcon={<MaterialCommunityIcons name="numeric" size={18} color={COLORS.primary} />}
                 />
                 
                 <Input
@@ -422,7 +423,7 @@ const AddStudents = ({ navigation }) => {
                   onChangeText={(text) => updateSingleStudentForm('phoneNumber', text)}
                   error={singleStudentErrors.phoneNumber}
                   keyboardType="phone-pad"
-                  leftIcon={<Text style={styles.inputIcon}>📱</Text>}
+                  leftIcon={<Icon name="phone" size={18} color={COLORS.primary} />}
                 />
                 
                 <Input
@@ -431,7 +432,7 @@ const AddStudents = ({ navigation }) => {
                   value={singleStudentForm.parentName}
                   onChangeText={(text) => updateSingleStudentForm('parentName', text)}
                   error={singleStudentErrors.parentName}
-                  leftIcon={<Text style={styles.inputIcon}>👨‍👩‍👧</Text>}
+                  leftIcon={<Icon name="family-restroom" size={18} color={COLORS.primary} />}
                 />
                 
                 <Input
@@ -441,7 +442,7 @@ const AddStudents = ({ navigation }) => {
                   onChangeText={(text) => updateSingleStudentForm('parentPhone', text)}
                   error={singleStudentErrors.parentPhone}
                   keyboardType="phone-pad"
-                  leftIcon={<Text style={styles.inputIcon}>☎️</Text>}
+                  leftIcon={<Icon name="call" size={18} color={COLORS.primary} />}
                 />
                 
                 <Button
@@ -468,11 +469,14 @@ const AddStudents = ({ navigation }) => {
               </View>
               
               <View style={styles.formContent}>
-                <Text style={styles.bulkInstructions}>
-                  💡 Example format:{'\n'}
-                  John Doe, 001, 9876543210, Jane Doe, 9876543211{'\n'}
-                  Alice Smith, 002, , Bob Smith, 9876543212
-                </Text>
+                <View style={styles.bulkInstructionsContainer}>
+                  <Icon name="lightbulb" size={16} color={COLORS.warning} />
+                  <Text style={styles.bulkInstructions}>
+                    Example format:{'\n'}
+                    John Doe, 001, 9876543210, Jane Doe, 9876543211{'\n'}
+                    Alice Smith, 002, , Bob Smith, 9876543212
+                  </Text>
+                </View>
                 
                 <Input
                   label="Students Data"
@@ -534,7 +538,7 @@ const AddStudents = ({ navigation }) => {
           {addMode === 'excel' && (
             <Card style={styles.formCard}>
               <View style={styles.excelContent}>
-                <Text style={styles.excelIcon}>📊</Text>
+                <MaterialCommunityIcons name="microsoft-excel" size={64} color={COLORS.success} />
                 <Text style={styles.excelTitle}>Excel Upload</Text>
                 <Text style={styles.excelDescription}>
                   Upload an Excel file with student data. The file should have columns:
@@ -564,7 +568,7 @@ const AddStudents = ({ navigation }) => {
           {!selectedClass && (
             <Card variant="filled" style={styles.instructionsCard}>
               <View style={styles.instructionsContent}>
-                <Text style={styles.instructionsIcon}>ℹ️</Text>
+                <Icon name="info" size={32} color={COLORS.primary} />
                 <Text style={styles.instructionsTitle}>Getting Started</Text>
                 <Text style={styles.instructionsText}>
                   1. First, select a class from the dropdown above{'\n'}
@@ -598,7 +602,7 @@ const AddStudents = ({ navigation }) => {
                   setShowClassModal(false);
                 }}
               >
-                <Text style={styles.classOptionIcon}>🏫</Text>
+                <Icon name="school" size={24} color={COLORS.primary} />
                 <View style={styles.classOptionText}>
                   <Text style={styles.classOptionTitle}>{cls.className}</Text>
                   <Text style={styles.classOptionSubtitle}>
@@ -612,7 +616,7 @@ const AddStudents = ({ navigation }) => {
             ))
           ) : (
             <View style={styles.noClasses}>
-              <Text style={styles.noClassesIcon}>🏫</Text>
+              <Icon name="school" size={48} color={COLORS.textSecondary} />
               <Text style={styles.noClassesText}>
                 No classes found. Create a class first before adding students.
               </Text>
@@ -630,14 +634,14 @@ const AddStudents = ({ navigation }) => {
           )}
         </View>
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.teacherBackground,
   },
   
   scrollView: {
@@ -663,7 +667,6 @@ const styles = StyleSheet.create({
   },
   
   classSelectorIcon: {
-    fontSize: 32,
     marginRight: SPACING.md,
   },
   
@@ -725,11 +728,6 @@ const styles = StyleSheet.create({
     borderColor: COLORS.primary,
   },
   
-  modeButtonIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.sm,
-  },
-  
   modeButtonText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.text,
@@ -776,14 +774,21 @@ const styles = StyleSheet.create({
   },
   
   // Bulk Add
-  bulkInstructions: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.textSecondary,
+  bulkInstructionsContainer: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
     backgroundColor: COLORS.surface,
     padding: SPACING.md,
     borderRadius: 8,
     marginBottom: SPACING.lg,
+  },
+  
+  bulkInstructions: {
+    ...TEXT_STYLES.bodySmall,
+    color: COLORS.textSecondary,
+    marginLeft: SPACING.sm,
     lineHeight: 18,
+    flex: 1,
   },
   
   bulkTextInput: {
@@ -844,11 +849,6 @@ const styles = StyleSheet.create({
     padding: SPACING.xl,
   },
   
-  excelIcon: {
-    fontSize: 64,
-    marginBottom: SPACING.lg,
-  },
-  
   excelTitle: {
     ...TEXT_STYLES.subtitle,
     color: COLORS.text,
@@ -884,11 +884,6 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
   },
   
-  instructionsIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.md,
-  },
-  
   instructionsTitle: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
@@ -919,11 +914,6 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.primary + '20',
   },
   
-  classOptionIcon: {
-    fontSize: 24,
-    marginRight: SPACING.md,
-  },
-  
   classOptionText: {
     flex: 1,
   },
@@ -949,11 +939,6 @@ const styles = StyleSheet.create({
   noClasses: {
     alignItems: 'center',
     padding: SPACING.xl,
-  },
-  
-  noClassesIcon: {
-    fontSize: 48,
-    marginBottom: SPACING.lg,
   },
   
   noClassesText: {

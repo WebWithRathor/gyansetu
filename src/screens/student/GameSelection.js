@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Card, Input, Button } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -393,7 +392,7 @@ const GameSelection = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Game Selection"
         subtitle={`${filteredGames.length} games available`}
@@ -571,14 +570,14 @@ const GameSelection = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.studentBackground,
   },
   
   scrollView: {

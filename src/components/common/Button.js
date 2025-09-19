@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
   buttonGhost: {
     backgroundColor: COLORS.transparent,
     borderWidth: 0,
-    shadowColor: '#4a5bb8',
+    shadowColor: '#ffffffff',
   },
   
   // State styles

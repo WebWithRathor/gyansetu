@@ -1,5 +1,12 @@
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
-import { getUserType, getTeacherData, getStudentData } from '../utils/storage';
+import { getUserType, getTeacherData, getStudentData, removeData } from '../utils/storage';
+
+// Storage Keys
+const STORAGE_KEYS = {
+  USER_TYPE: 'user_type',
+  TEACHER_DATA: 'teacher_data', 
+  STUDENT_DATA: 'student_data',
+};
 
 // Initial State
 const initialState = {
@@ -233,8 +240,20 @@ export const AppProvider = ({ children }) => {
       dispatch({ type: actionTypes.SET_STUDENT_DATA, payload: data });
     },
     
-    logout: () => {
-      dispatch({ type: actionTypes.LOGOUT });
+    logout: async () => {
+      try {
+        // Clear user data from storage
+        await removeData(STORAGE_KEYS.USER_TYPE);
+        await removeData(STORAGE_KEYS.TEACHER_DATA);
+        await removeData(STORAGE_KEYS.STUDENT_DATA);
+        
+        // Reset state
+        dispatch({ type: actionTypes.LOGOUT });
+      } catch (error) {
+        console.error('Error during logout:', error);
+        // Still reset state even if storage clearing fails
+        dispatch({ type: actionTypes.LOGOUT });
+      }
     },
     
     // Navigation Actions

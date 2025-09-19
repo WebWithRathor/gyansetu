@@ -92,12 +92,12 @@ export const calculateScore = (correctAnswers, wrongAnswers, bonusMultiplier = 1
 
 export const getScoreEmoji = (score, maxScore) => {
   const percentage = (score / maxScore) * 100;
-  if (percentage >= 90) return '🌟';
-  if (percentage >= 80) return '🎉';
-  if (percentage >= 70) return '👏';
-  if (percentage >= 60) return '👍';
-  if (percentage >= 50) return '💪';
-  return '📚';
+  if (percentage >= 90) return { icon: 'star', type: 'MaterialIcons', emoji: '⭐' };
+  if (percentage >= 80) return { icon: 'celebration', type: 'MaterialIcons', emoji: '🎉' };
+  if (percentage >= 70) return { icon: 'thumb-up', type: 'MaterialIcons', emoji: '👏' };
+  if (percentage >= 60) return { icon: 'trending-up', type: 'MaterialIcons', emoji: '👍' };
+  if (percentage >= 50) return { icon: 'fitness-center', type: 'MaterialIcons', emoji: '💪' };
+  return { icon: 'school', type: 'MaterialIcons', emoji: '📚' };
 };
 
 export const formatTime = (seconds) => {

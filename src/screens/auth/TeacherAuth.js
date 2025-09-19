@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, Input, Header } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -99,7 +99,7 @@ const TeacherAuth = ({ navigation }) => {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title={isLogin ? 'Teacher Login' : 'Teacher Registration'}
         variant="teacher"
@@ -115,7 +115,7 @@ const TeacherAuth = ({ navigation }) => {
           <View style={styles.content}>
             {/* Welcome Section */}
             <View style={styles.welcomeSection}>
-              <Text style={styles.welcomeIcon}>👩‍🏫</Text>
+              <Icon name="school" size={48} color={COLORS.primary} />
               <Text style={styles.welcomeTitle}>
                 {isLogin ? 'Welcome Back!' : 'Join Gyansetu'}
               </Text>
@@ -137,7 +137,7 @@ const TeacherAuth = ({ navigation }) => {
                 keyboardType="phone-pad"
                 maxLength={10}
                 error={errors.phoneNumber}
-                leftIcon={<Text style={styles.inputIcon}>📱</Text>}
+                leftIcon={<Icon name="phone" size={20} color={COLORS.textSecondary} />}
               />
               
               {!isLogin && (
@@ -148,7 +148,7 @@ const TeacherAuth = ({ navigation }) => {
                     value={formData.name}
                     onChangeText={(text) => updateFormData('name', text)}
                     error={errors.name}
-                    leftIcon={<Text style={styles.inputIcon}>👤</Text>}
+                    leftIcon={<Icon name="person" size={20} color={COLORS.textSecondary} />}
                   />
                   
                   <Input
@@ -157,7 +157,7 @@ const TeacherAuth = ({ navigation }) => {
                     value={formData.schoolName}
                     onChangeText={(text) => updateFormData('schoolName', text)}
                     error={errors.schoolName}
-                    leftIcon={<Text style={styles.inputIcon}>🏫</Text>}
+                    leftIcon={<Icon name="school" size={20} color={COLORS.textSecondary} />}
                   />
                 </>
               )}
@@ -185,26 +185,18 @@ const TeacherAuth = ({ navigation }) => {
               />
             </View>
             
-            {/* Info Section */}
-            <View style={styles.infoSection}>
-              <Text style={styles.infoTitle}>What you can do:</Text>
-              <Text style={styles.infoText}>• Create and manage classes</Text>
-              <Text style={styles.infoText}>• Add students easily</Text>
-              <Text style={styles.infoText}>• Design interactive games</Text>
-              <Text style={styles.infoText}>• Track student progress</Text>
-              <Text style={styles.infoText}>• Work offline when needed</Text>
-            </View>
+          
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.authBackground,
   },
   
   keyboardView: {
@@ -224,15 +216,11 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.xxxl,
   },
   
-  welcomeIcon: {
-    fontSize: 64,
-    marginBottom: SPACING.lg,
-  },
-  
   welcomeTitle: {
     ...TEXT_STYLES.title,
     color: COLORS.primary,
     textAlign: 'center',
+    marginTop: SPACING.md,
     marginBottom: SPACING.sm,
   },
   
@@ -245,10 +233,6 @@ const styles = StyleSheet.create({
   
   formSection: {
     marginBottom: SPACING.xl,
-  },
-  
-  inputIcon: {
-    fontSize: 20,
   },
   
   submitButton: {
@@ -279,10 +263,16 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.md,
   },
   
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+  },
+  
   infoText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.textSecondary,
-    marginBottom: SPACING.xs,
+    marginLeft: SPACING.sm,
   },
 });
 

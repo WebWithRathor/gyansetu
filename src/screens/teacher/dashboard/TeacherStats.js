@@ -1,49 +1,48 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import { SPACING } from '../../constants/layout';
+import { SPACING } from '../../../constants/layout';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { TEXT_STYLES } from '../../constants/typography';
-import { COLORS } from '../../constants/colors';
+import { TEXT_STYLES } from '../../../constants/typography';
+import { COLORS } from '../../../constants/colors';
 
-const ProgressStats = ({ dashboardData }) => {
+const TeacherStats = ({ dashboardData }) => {
   const stats = [
     {
-      iconName: 'games',
-      icon: 'gamepad-variant',
-      iconType: 'MaterialCommunityIcons',
-      value: dashboardData.availableGames.length,
-      label: 'Available',
+      iconName: 'school',
+      icon: 'school',
+      iconType: 'MaterialIcons',
+      value: dashboardData.totalClasses,
+      label: 'Classes',
       backgroundColor: '#e3e5f0ff',
       shadowColor: '#4a5bb8',
       textColor: '#000',
     },
     { 
-      iconName: 'check-circle',
-      icon: 'check-circle',
+      iconName: 'people',
+      icon: 'people',
       iconType: 'MaterialIcons',
-      value: dashboardData.completedGames.length,
-      label: 'Completed',
+      value: dashboardData.totalStudents,
+      label: 'Students',
       backgroundColor: '#f8e4eeff',
       shadowColor: '#d63384',
       textColor: '#000',
     },
     { 
-      iconName: 'emoji-events', 
-      icon: 'emoji-events',
-      iconType: 'MaterialIcons',
-      value: dashboardData.badges.length, 
-      label: 'Badges',
+      iconName: 'games', 
+      icon: 'gamepad-variant',
+      iconType: 'MaterialCommunityIcons',
+      value: dashboardData.totalGames, 
+      label: 'Games',
       backgroundColor: '#dbefdfff',
       shadowColor: '#0d6efd',
       textColor: '#000',
     },
   ];
 
-
   return (
     <View style={styles.statsSection}>
-      <Text style={styles.sectionTitle}>Your Progress</Text>
+      <Text style={styles.sectionTitle}>Overview</Text>
       <View style={styles.statsRow}>
         {stats.map((stat, index) => (
           <View key={index} style={bubbleStyles.cardWrapper}>
@@ -100,11 +99,9 @@ const styles = StyleSheet.create({
       justifyContent: 'center',
       paddingTop: SPACING.lg,
     },
-
 });
 
 const bubbleStyles = StyleSheet.create({
- 
   cardWrapper: {
     width: '30%',
     marginHorizontal: SPACING.xs,
@@ -115,12 +112,11 @@ const bubbleStyles = StyleSheet.create({
   },
   
   statCard: {
-    // height: 100,
     height: 120,
     borderRadius: 10,
-    borderWidth:2,
+    borderWidth: 2,
     padding: SPACING.lg,
-    borderColor:'#000000ff',
+    borderColor: '#000000ff',
   },
   
   statContent: {
@@ -166,7 +162,6 @@ const bubbleStyles = StyleSheet.create({
   statValue: {
     fontSize: 22,
     fontWeight: 'bold',
-    // color: '#FFFFFF',
     marginTop: -4,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 1, height: 1 },
@@ -177,9 +172,20 @@ const bubbleStyles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'center',
     fontWeight: '600',
-
   },
   
+  // 3D Effect styles
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '60%',
+    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    zIndex: 1,
+    borderTopLeftRadius: 8,
+    borderTopRightRadius: 8,
+  },
 
   // Inner shadow for depth
   innerShadow: {
@@ -188,11 +194,11 @@ const bubbleStyles = StyleSheet.create({
     left: 0,
     right: 0,
     height: '30%',
-    borderBottomLeftRadius: 0,
-    borderBottomRightRadius: 0,
+    borderBottomLeftRadius: 8,
+    borderBottomRightRadius: 8,
     backgroundColor: 'rgba(0, 0, 0, 0.1)',
     zIndex: 1,
   },
 });
 
-export default ProgressStats;
+export default TeacherStats;

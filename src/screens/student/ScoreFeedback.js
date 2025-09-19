@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, ScrollView, Animated } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { Header, Card, Button } from '../../components/common';
+import { View, StyleSheet, ScrollView, Animated } from 'react-native';
+import { Header } from '../../components/common';
+import { 
+  ScoreCard, 
+  BadgeCard, 
+  PerformanceAnalytics, 
+  ImprovementTips, 
+  ActionButtons, 
+  ShareAchievement, 
+  LearningProgress 
+} from '../../components/feedback';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
-import { TEXT_STYLES } from '../../constants/typography';
-import { getScoreEmoji, formatTime } from '../../utils/helpers';
+import { getScoreEmoji } from '../../utils/helpers';
 
 const ScoreFeedback = ({ navigation, route }) => {
   const { gameResults, game } = route?.params || {};
@@ -32,7 +39,7 @@ const ScoreFeedback = ({ navigation, route }) => {
   const percentage = isBlockBlast 
     ? Math.min(100, Math.round((score / 500) * 100)) // For block blast, assume 500 is max reasonable score
     : Math.round((correctAnswers / totalQuestions) * 100);
-  const emoji = getScoreEmoji(correctAnswers, totalQuestions);
+  const emojiData = getScoreEmoji(correctAnswers, totalQuestions);
   
   useEffect(() => {
     // Animate score reveal
@@ -55,12 +62,42 @@ const ScoreFeedback = ({ navigation, route }) => {
   };
 
   const getBadgeEarned = () => {
-    if (percentage >= 95) return { emoji: '🏆', name: 'Perfect Score', description: 'Scored 95% or higher' };
-    if (percentage >= 90) return { emoji: '🌟', name: 'Star Player', description: 'Scored 90% or higher' };
-    if (percentage >= 80) return { emoji: '🎯', name: 'Sharp Shooter', description: 'Scored 80% or higher' };
-    if (percentage >= 70) return { emoji: '👏', name: 'Good Effort', description: 'Scored 70% or higher' };
-    if (percentage >= 60) return { emoji: '👍', name: 'Keep Going', description: 'Scored 60% or higher' };
-    return { emoji: '📚', name: 'Learner', description: 'Completed the game' };
+    if (percentage >= 95) return { 
+      icon: 'emoji-events', 
+      name: 'Perfect Score', 
+      description: 'Flawless performance! You got 95% or higher!', 
+      iconType: 'MaterialIcons' 
+    };
+    if (percentage >= 90) return { 
+      icon: 'star', 
+      name: 'Star Player', 
+      description: 'Outstanding! You scored 90% or higher!', 
+      iconType: 'MaterialIcons' 
+    };
+    if (percentage >= 80) return { 
+      icon: 'gps-fixed', 
+      name: 'Sharp Shooter', 
+      description: 'Excellent accuracy! You scored 80% or higher!', 
+      iconType: 'MaterialIcons' 
+    };
+    if (percentage >= 70) return { 
+      icon: 'thumb-up', 
+      name: 'Good Effort', 
+      description: 'Well done! You scored 70% or higher!', 
+      iconType: 'MaterialIcons' 
+    };
+    if (percentage >= 60) return { 
+      icon: 'trending-up', 
+      name: 'Keep Going', 
+      description: 'Nice try! You scored 60% or higher!', 
+      iconType: 'MaterialIcons' 
+    };
+    return { 
+      icon: 'school', 
+      name: 'Learner', 
+      description: 'Every attempt makes you stronger!', 
+      iconType: 'MaterialIcons' 
+    };
   };
 
   const badge = getBadgeEarned();
@@ -92,7 +129,7 @@ const ScoreFeedback = ({ navigation, route }) => {
   const tips = getImprovementTips();
   
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Game Results"
         subtitle={gameTitle}
@@ -104,233 +141,57 @@ const ScoreFeedback = ({ navigation, route }) => {
       <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
         <View style={styles.content}>
           {/* Main Score Card */}
-          <Card variant="game" style={styles.scoreCard}>
-            <View style={styles.scoreContent}>
-              <Animated.View style={[
-                styles.emojiContainer,
-                {
-                  transform: [{
-                    scale: animatedValue.interpolate({
-                      inputRange: [0, 1],
-                      outputRange: [0.5, 1],
-                    })
-                  }]
-                }
-              ]}>
-                <Text style={styles.resultEmoji}>{emoji}</Text>
-              </Animated.View>
-              
-              <Text style={styles.scoreTitle}>Your Score</Text>
-              
-              <Animated.View style={[
-                styles.scoreValueContainer,
-                {
-                  opacity: animatedValue,
-                }
-              ]}>
-                <Text style={styles.scoreValue}>{score}/{totalQuestions}</Text>
-                <Text style={styles.percentage}>{percentage}%</Text>
-              </Animated.View>
-              
-              <Text style={styles.performanceMessage}>
-                {getPerformanceMessage()}
-              </Text>
-            </View>
-          </Card>
+          <ScoreCard
+            score={score}
+            totalQuestions={totalQuestions}
+            percentage={percentage}
+            emojiData={emojiData}
+            animatedValue={animatedValue}
+            performanceMessage={getPerformanceMessage()}
+          />
 
           {/* Badge Earned */}
           {showDetails && (
-            <Card style={styles.badgeCard}>
-              <View style={styles.badgeContent}>
-                <Text style={styles.badgeEmoji}>{badge.emoji}</Text>
-                <Text style={styles.badgeTitle}>Badge Earned!</Text>
-                <Text style={styles.badgeName}>{badge.name}</Text>
-                <Text style={styles.badgeDescription}>{badge.description}</Text>
-              </View>
-            </Card>
+            <BadgeCard badge={badge} />
           )}
 
           {/* Detailed Analytics */}
           {showDetails && (
-            <View style={styles.analyticsSection}>
-              <Text style={styles.sectionTitle}>Performance Breakdown</Text>
-              
-              <Card style={styles.analyticsCard}>
-                <View style={styles.analyticsGrid}>
-                  {isBlockBlast ? (
-                    <>
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>🧩</Text>
-                        <Text style={styles.analyticValue}>{linesCleared}</Text>
-                        <Text style={styles.analyticLabel}>Lines Cleared</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>🎯</Text>
-                        <Text style={styles.analyticValue}>{moves}</Text>
-                        <Text style={styles.analyticLabel}>Moves</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>🔥</Text>
-                        <Text style={styles.analyticValue}>{questionStreak}</Text>
-                        <Text style={styles.analyticLabel}>Question Streak</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>📊</Text>
-                        <Text style={styles.analyticValue}>{score}</Text>
-                        <Text style={styles.analyticLabel}>Total Score</Text>
-                      </View>
-                    </>
-                  ) : (
-                    <>
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>✅</Text>
-                        <Text style={styles.analyticValue}>{correctAnswers}</Text>
-                        <Text style={styles.analyticLabel}>Correct</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>❌</Text>
-                        <Text style={styles.analyticValue}>{wrongAnswers}</Text>
-                        <Text style={styles.analyticLabel}>Wrong</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>⏱️</Text>
-                        <Text style={styles.analyticValue}>
-                          {timeTaken > 0 ? formatTime(timeTaken) : '--'}
-                        </Text>
-                        <Text style={styles.analyticLabel}>Time</Text>
-                      </View>
-                      
-                      <View style={styles.analyticItem}>
-                        <Text style={styles.analyticIcon}>🎯</Text>
-                        <Text style={styles.analyticValue}>{Math.round((correctAnswers / totalQuestions) * 100)}%</Text>
-                        <Text style={styles.analyticLabel}>Accuracy</Text>
-                      </View>
-                    </>
-                  )}
-                </View>
-              </Card>
-            </View>
+            <PerformanceAnalytics
+              isBlockBlast={isBlockBlast}
+              linesCleared={linesCleared}
+              moves={moves}
+              questionStreak={questionStreak}
+              score={score}
+              correctAnswers={correctAnswers}
+              wrongAnswers={wrongAnswers}
+              timeTaken={timeTaken}
+              totalQuestions={totalQuestions}
+            />
           )}
 
           {/* Improvement Tips */}
-          {showDetails && tips.length > 0 && (
-            <View style={styles.tipsSection}>
-              <Text style={styles.sectionTitle}>Tips for Improvement</Text>
-              
-              <Card style={styles.tipsCard}>
-                {tips.map((tip, index) => (
-                  <View key={index} style={styles.tipItem}>
-                    <Text style={styles.tipBullet}>💡</Text>
-                    <Text style={styles.tipText}>{tip}</Text>
-                  </View>
-                ))}
-              </Card>
-            </View>
+          {showDetails && (
+            <ImprovementTips tips={tips} />
           )}
 
           {/* Action Buttons */}
           {showDetails && (
-            <View style={styles.actionsSection}>
-              <Button
-                title="Play Again"
-                variant="primary"
-                fullWidth
-                onPress={() => {
-                  navigation.goBack();
-                  // Navigate back to game with same parameters
-                }}
-                style={styles.playAgainButton}
-              />
-              
-              <Button
-                title="Try Different Game"
-                variant="outline"
-                fullWidth
-                onPress={() => navigation.navigate('GameSelection')}
-                style={styles.tryDifferentButton}
-              />
-              
-              <Button
-                title="Back to Dashboard"
-                variant="ghost"
-                fullWidth
-                onPress={() => navigation.navigate('StudentDashboard')}
-                style={styles.dashboardButton}
-              />
-            </View>
+            <ActionButtons navigation={navigation} />
           )}
 
-          {/* Share Achievement */}
-          {showDetails && percentage >= 70 && (
-            <View style={styles.shareSection}>
-              <Card variant="filled" style={styles.shareCard}>
-                <View style={styles.shareContent}>
-                  <Text style={styles.shareIcon}>🎉</Text>
-                  <Text style={styles.shareTitle}>Great Achievement!</Text>
-                  <Text style={styles.shareText}>
-                    You scored {percentage}% in {gameTitle}. Share your success with friends!
-                  </Text>
-                  <Button
-                    title="Share Achievement"
-                    variant="secondary"
-                    size="small"
-                    onPress={() => {
-                      // Mock share functionality
-                      console.log('Sharing achievement...');
-                    }}
-                    style={styles.shareButton}
-                  />
-                </View>
-              </Card>
-            </View>
-          )}
-
-          {/* Learning Progress */}
-          {showDetails && (
-            <View style={styles.progressSection}>
-              <Text style={styles.sectionTitle}>Your Learning Journey</Text>
-              
-              <Card style={styles.progressCard}>
-                <View style={styles.progressContent}>
-                  <Text style={styles.progressIcon}>📈</Text>
-                  <Text style={styles.progressTitle}>Keep Learning!</Text>
-                  <Text style={styles.progressText}>
-                    Every game helps you learn something new. Your progress is being tracked across all subjects.
-                  </Text>
-                  
-                  <View style={styles.progressStats}>
-                    <View style={styles.progressStat}>
-                      <Text style={styles.progressStatValue}>3</Text>
-                      <Text style={styles.progressStatLabel}>Games Completed</Text>
-                    </View>
-                    <View style={styles.progressStat}>
-                      <Text style={styles.progressStatValue}>87%</Text>
-                      <Text style={styles.progressStatLabel}>Avg. Score</Text>
-                    </View>
-                    <View style={styles.progressStat}>
-                      <Text style={styles.progressStatValue}>5</Text>
-                      <Text style={styles.progressStatLabel}>Badges Earned</Text>
-                    </View>
-                  </View>
-                </View>
-              </Card>
-            </View>
-          )}
+         
+          
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.studentBackground,
   },
   
   scrollView: {
@@ -339,267 +200,6 @@ const styles = StyleSheet.create({
   
   content: {
     padding: SPACING.lg,
-  },
-  
-  // Main Score Card
-  scoreCard: {
-    marginBottom: SPACING.xl,
-  },
-  
-  scoreContent: {
-    alignItems: 'center',
-    padding: SPACING.xl,
-  },
-  
-  emojiContainer: {
-    marginBottom: SPACING.lg,
-  },
-  
-  resultEmoji: {
-    fontSize: 80,
-  },
-  
-  scoreTitle: {
-    ...TEXT_STYLES.subtitle,
-    color: COLORS.text,
-    textAlign: 'center',
-    marginBottom: SPACING.md,
-  },
-  
-  scoreValueContainer: {
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
-  },
-  
-  scoreValue: {
-    ...TEXT_STYLES.hero,
-    color: COLORS.gamePurple,
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-  },
-  
-  percentage: {
-    ...TEXT_STYLES.title,
-    color: COLORS.accent,
-    textAlign: 'center',
-  },
-  
-  performanceMessage: {
-    ...TEXT_STYLES.body,
-    color: COLORS.text,
-    textAlign: 'center',
-    fontWeight: '600',
-  },
-  
-  // Badge Card
-  badgeCard: {
-    marginBottom: SPACING.xl,
-    backgroundColor: COLORS.gameYellow + '20',
-  },
-  
-  badgeContent: {
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-  
-  badgeEmoji: {
-    fontSize: 48,
-    marginBottom: SPACING.md,
-  },
-  
-  badgeTitle: {
-    ...TEXT_STYLES.heading,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-  
-  badgeName: {
-    ...TEXT_STYLES.subtitle,
-    color: COLORS.gameYellow,
-    marginBottom: SPACING.xs,
-    fontWeight: '700',
-  },
-  
-  badgeDescription: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-  },
-  
-  // Analytics Section
-  analyticsSection: {
-    marginBottom: SPACING.xl,
-  },
-  
-  sectionTitle: {
-    ...TEXT_STYLES.heading,
-    color: COLORS.text,
-    marginBottom: SPACING.lg,
-  },
-  
-  analyticsCard: {
-    padding: SPACING.lg,
-  },
-  
-  analyticsGrid: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-  },
-  
-  analyticItem: {
-    alignItems: 'center',
-    flex: 1,
-  },
-  
-  analyticIcon: {
-    fontSize: 24,
-    marginBottom: SPACING.sm,
-  },
-  
-  analyticValue: {
-    ...TEXT_STYLES.title,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-  
-  analyticLabel: {
-    ...TEXT_STYLES.caption,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-  },
-  
-  // Tips Section
-  tipsSection: {
-    marginBottom: SPACING.xl,
-  },
-  
-  tipsCard: {
-    padding: SPACING.lg,
-  },
-  
-  tipItem: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: SPACING.md,
-  },
-  
-  tipBullet: {
-    fontSize: 16,
-    marginRight: SPACING.sm,
-    marginTop: 2,
-  },
-  
-  tipText: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.text,
-    flex: 1,
-    lineHeight: 20,
-  },
-  
-  // Actions Section
-  actionsSection: {
-    marginBottom: SPACING.xl,
-  },
-  
-  playAgainButton: {
-    marginBottom: SPACING.md,
-  },
-  
-  tryDifferentButton: {
-    marginBottom: SPACING.md,
-  },
-  
-  dashboardButton: {
-    // No additional styles
-  },
-  
-  // Share Section
-  shareSection: {
-    marginBottom: SPACING.xl,
-  },
-  
-  shareCard: {
-    backgroundColor: COLORS.success + '20',
-  },
-  
-  shareContent: {
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-  
-  shareIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.md,
-  },
-  
-  shareTitle: {
-    ...TEXT_STYLES.heading,
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-  },
-  
-  shareText: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginBottom: SPACING.lg,
-  },
-  
-  shareButton: {
-    // No additional styles
-  },
-  
-  // Progress Section
-  progressSection: {
-    marginBottom: SPACING.xl,
-  },
-  
-  progressCard: {
-    padding: SPACING.lg,
-  },
-  
-  progressContent: {
-    alignItems: 'center',
-  },
-  
-  progressIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.md,
-  },
-  
-  progressTitle: {
-    ...TEXT_STYLES.heading,
-    color: COLORS.text,
-    marginBottom: SPACING.sm,
-  },
-  
-  progressText: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    marginBottom: SPACING.lg,
-  },
-  
-  progressStats: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    width: '100%',
-  },
-  
-  progressStat: {
-    alignItems: 'center',
-  },
-  
-  progressStatValue: {
-    ...TEXT_STYLES.title,
-    color: COLORS.primary,
-    marginBottom: SPACING.xs,
-  },
-  
-  progressStatLabel: {
-    ...TEXT_STYLES.caption,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
   },
 });
 

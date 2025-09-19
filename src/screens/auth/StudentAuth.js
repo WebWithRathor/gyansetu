@@ -1,6 +1,14 @@
 import React, { useState } from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, Platform, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+  Alert,
+} from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { Button, Input, Header, Card } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -16,16 +24,16 @@ const StudentAuth = ({ navigation }) => {
   const [error, setError] = useState('');
   const [students, setStudents] = useState([]);
   const [showStudentSelection, setShowStudentSelection] = useState(false);
-  
+
   const handlePhoneSubmit = async () => {
     if (!validatePhoneNumber(phoneNumber)) {
       setError('Please enter a valid 10-digit phone number');
       return;
     }
-    
+
     setLoading(true);
     setError('');
-    
+
     try {
       // Mock API call to get students by phone number
       // In real app, this would be an API call
@@ -49,7 +57,7 @@ const StudentAuth = ({ navigation }) => {
           schoolName: 'Rural Government School',
         },
       ];
-      
+
       if (mockStudents.length > 0) {
         setStudents(mockStudents);
         setShowStudentSelection(true);
@@ -57,7 +65,7 @@ const StudentAuth = ({ navigation }) => {
         Alert.alert(
           'No Account Found',
           'No student account found with this phone number. Please contact your teacher.',
-          [{ text: 'OK' }]
+          [{ text: 'OK' }],
         );
       }
     } catch (err) {
@@ -67,18 +75,18 @@ const StudentAuth = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
-  const handleStudentSelect = async (student) => {
+
+  const handleStudentSelect = async student => {
     setLoading(true);
-    
+
     try {
       // Store student data locally
       await storeStudentData(student);
       await storeUserType('student');
-      
+
       // Update app context
       setStudentData(student);
-      
+
       // Navigate to dashboard
       navigation.replace('StudentDashboard');
     } catch (err) {
@@ -88,7 +96,7 @@ const StudentAuth = ({ navigation }) => {
       setLoading(false);
     }
   };
-  
+
   const handleBack = () => {
     if (showStudentSelection) {
       setShowStudentSelection(false);
@@ -97,36 +105,39 @@ const StudentAuth = ({ navigation }) => {
       navigation.goBack();
     }
   };
-  
-  const updatePhoneNumber = (text) => {
+
+  const updatePhoneNumber = text => {
     setPhoneNumber(text);
     if (error) {
       setError('');
     }
   };
-  
+
   if (showStudentSelection) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <Header
           title="Select Your Profile"
           variant="student"
           showBackButton
           onLeftPress={handleBack}
         />
-        
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
             <View style={styles.selectionHeader}>
-              <Text style={styles.selectionIcon}>👥</Text>
+              <Icon name="people" size={40} color={COLORS.accent} />
               <Text style={styles.selectionTitle}>Multiple profiles found</Text>
               <Text style={styles.selectionSubtitle}>
                 Select your profile to continue
               </Text>
             </View>
-            
+
             <View style={styles.studentsContainer}>
-              {students.map((student) => (
+              {students.map(student => (
                 <Card
                   key={student.id}
                   variant="student"
@@ -134,20 +145,30 @@ const StudentAuth = ({ navigation }) => {
                   style={styles.studentCard}
                 >
                   <View style={styles.studentContent}>
-                    <Text style={styles.studentIcon}>🎓</Text>
+                    <Icon
+                      name="account-circle"
+                      size={32}
+                      color={COLORS.accent}
+                    />
                     <View style={styles.studentInfo}>
                       <Text style={styles.studentName}>{student.name}</Text>
                       <Text style={styles.studentDetails}>
                         Grade {student.grade} • {student.className}
                       </Text>
-                      <Text style={styles.studentSchool}>{student.schoolName}</Text>
+                      <Text style={styles.studentSchool}>
+                        {student.schoolName}
+                      </Text>
                     </View>
-                    <Text style={styles.selectIcon}>→</Text>
+                    <Icon
+                      name="arrow-forward"
+                      size={20}
+                      color={COLORS.textSecondary}
+                    />
                   </View>
                 </Card>
               ))}
             </View>
-            
+
             <View style={styles.helpSection}>
               <Text style={styles.helpText}>
                 Don't see your name? Contact your teacher to add you to a class.
@@ -155,34 +176,37 @@ const StudentAuth = ({ navigation }) => {
             </View>
           </View>
         </ScrollView>
-      </SafeAreaView>
+      </View>
     );
   }
-  
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Student Login"
         variant="student"
         showBackButton
         onLeftPress={handleBack}
       />
-      
+
       <KeyboardAvoidingView
         style={styles.keyboardView}
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       >
-        <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+        <ScrollView
+          style={styles.scrollView}
+          showsVerticalScrollIndicator={false}
+        >
           <View style={styles.content}>
             {/* Welcome Section */}
             <View style={styles.welcomeSection}>
-              <Text style={styles.welcomeIcon}>🎓</Text>
+              <Icon name="school" size={48} color={COLORS.primary} />
               <Text style={styles.welcomeTitle}>Welcome Student!</Text>
               <Text style={styles.welcomeSubtitle}>
                 Enter your phone number to access your learning games
               </Text>
             </View>
-            
+
             {/* Form Section */}
             <View style={styles.formSection}>
               <Input
@@ -193,9 +217,11 @@ const StudentAuth = ({ navigation }) => {
                 keyboardType="phone-pad"
                 maxLength={10}
                 error={error}
-                leftIcon={<Text style={styles.inputIcon}>📱</Text>}
+                leftIcon={
+                  <Icon name="phone" size={20} color={COLORS.textSecondary} />
+                }
               />
-              
+
               <Button
                 title="Continue"
                 onPress={handlePhoneSubmit}
@@ -205,191 +231,194 @@ const StudentAuth = ({ navigation }) => {
                 style={styles.submitButton}
               />
             </View>
-            
+
             {/* Info Section */}
-            <View style={styles.infoSection}>
-              <Text style={styles.infoTitle}>What you can do:</Text>
-              <Text style={styles.infoText}>• Play educational games</Text>
-              <Text style={styles.infoText}>• Earn points and badges</Text>
-              <Text style={styles.infoText}>• Track your progress</Text>
-              <Text style={styles.infoText}>• Learn even when offline</Text>
-              <Text style={styles.infoText}>• Compete with classmates</Text>
-            </View>
-            
-            {/* Help Section */}
-            <View style={styles.helpSection}>
-              <Text style={styles.helpTitle}>Need Help?</Text>
-              <Text style={styles.helpText}>
-                If you don't have an account, ask your teacher to add you to their class. 
-                They will provide you with the phone number to use for login.
-              </Text>
+            <View style={styles.infoSectionWrap}>
+           
+              {/* Help Section */}
+              <View style={styles.helpSection}>
+                <Text style={styles.helpTitle}>Need Help?</Text>
+                <Text style={styles.helpText}>
+                  If you don't have an account, ask your teacher to add you to
+                  their class. They will provide you with the phone number to
+                  use for login.
+                </Text>
+              </View>
             </View>
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.authBackground,
   },
-  
+
   keyboardView: {
     flex: 1,
   },
-  
+
   scrollView: {
     flex: 1,
   },
-  
+
   content: {
     padding: SPACING.xl,
   },
-  
+
   welcomeSection: {
     alignItems: 'center',
     marginBottom: SPACING.xxxl,
   },
-  
-  welcomeIcon: {
-    fontSize: 64,
-    marginBottom: SPACING.lg,
-  },
-  
+
   welcomeTitle: {
     ...TEXT_STYLES.title,
-    color: COLORS.accent,
+    color: COLORS.primary,
     textAlign: 'center',
+    marginTop: SPACING.md,
     marginBottom: SPACING.sm,
   },
-  
+
   welcomeSubtitle: {
     ...TEXT_STYLES.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
     maxWidth: 280,
   },
-  
+
   formSection: {
     marginBottom: SPACING.xl,
   },
-  
-  inputIcon: {
-    fontSize: 20,
-  },
-  
+
   submitButton: {
     marginTop: SPACING.lg,
   },
-  
+
   // Student Selection Styles
   selectionHeader: {
     alignItems: 'center',
     marginBottom: SPACING.xl,
   },
-  
+
   selectionIcon: {
     fontSize: 48,
     marginBottom: SPACING.lg,
   },
-  
+
   selectionTitle: {
     ...TEXT_STYLES.subtitle,
     color: COLORS.text,
     textAlign: 'center',
     marginBottom: SPACING.sm,
   },
-  
+
   selectionSubtitle: {
     ...TEXT_STYLES.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  
+
   studentsContainer: {
     marginBottom: SPACING.xl,
   },
-  
+
   studentCard: {
     marginBottom: SPACING.md,
+    backgroundColor: COLORS.surface,
   },
-  
+
   studentContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.lg,
+    gap: SPACING.md,
   },
-  
+
   studentIcon: {
     fontSize: 32,
     marginRight: SPACING.md,
   },
-  
+
   studentInfo: {
     flex: 1,
   },
-  
+
   studentName: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
     marginBottom: SPACING.xs,
   },
-  
+
   studentDetails: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.accent,
     marginBottom: 2,
   },
-  
+
   studentSchool: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
   },
-  
+
   selectIcon: {
     fontSize: 20,
     color: COLORS.textSecondary,
   },
-  
+
   // Info and Help Sections
+  infoSectionWrap: {
+    backgroundColor: COLORS.surface,
+    borderWidth: 1,
+    padding: SPACING.lg,
+    borderRadius: 12,
+  },
+
   infoSection: {
     backgroundColor: COLORS.surface,
     padding: SPACING.lg,
-    borderRadius: 12,
-    marginBottom: SPACING.lg,
   },
-  
+
   infoTitle: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
     marginBottom: SPACING.md,
   },
-  
+
   infoText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.textSecondary,
     marginBottom: SPACING.xs,
   },
-  
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
+    gap: SPACING.sm,
+  },
+
   helpSection: {
-    padding: SPACING.lg,
+    paddingLeft: SPACING.lg,
+    paddingRight: SPACING.lg,
     backgroundColor: COLORS.surface,
     borderRadius: 12,
   },
-  
+
   helpTitle: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
     marginBottom: SPACING.sm,
   },
-  
+
   helpText: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.textSecondary,
     lineHeight: 20,
+    paddingTop: SPACING.lg,
+    paddingBottom: SPACING.lg,
   },
 });
 

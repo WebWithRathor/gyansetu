@@ -1,11 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, StatusBar } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { View, Text, StyleSheet, StatusBar, Platform } from 'react-native';
 import { Card } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
 import { useApp } from '../../context/AppContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const UserTypeSelection = ({ navigation }) => {
   const { setUserType } = useApp();
@@ -21,78 +21,82 @@ const UserTypeSelection = ({ navigation }) => {
   };
   
   return (
-    <>
-      <StatusBar backgroundColor={COLORS.background} barStyle="dark-content" />
-      <SafeAreaView style={styles.container}>
-        <View style={styles.content}>
-          {/* Header */}
-          <View style={styles.header}>
+    <View style={styles.container}>
+      <StatusBar backgroundColor={COLORS.authBackground} barStyle="dark-content" />
+      <View style={styles.content}>
+        {/* Header */}
+        <View style={styles.header}>
+          <View style={styles.logoContainer}>
+            <Icon name="auto-stories" size={36} color={COLORS.primary} />
             <Text style={styles.appName}>Gyansetu</Text>
-            <Text style={styles.tagline}>Learn. Play. Grow.</Text>
-            <Text style={styles.description}>
-              A gamified learning platform for rural students
-            </Text>
           </View>
-          
-          {/* Selection Cards */}
-          <View style={styles.selectionContainer}>
-            <Text style={styles.selectionTitle}>I am a...</Text>
-            
-            <Card
-              variant="teacher"
-              onPress={handleTeacherSelect}
-              style={styles.selectionCard}
-            >
-              <View style={styles.cardContent}>
-                <Text style={styles.cardIcon}>👩‍🏫</Text>
-                <Text style={styles.cardTitle}>Teacher</Text>
-                <Text style={styles.cardDescription}>
-                  Create classes, add students, and design learning games
-                </Text>
-                <View style={styles.cardFeatures}>
-                  <Text style={styles.featureText}>• Create interactive games</Text>
-                  <Text style={styles.featureText}>• Manage students</Text>
-                  <Text style={styles.featureText}>• Track progress</Text>
-                </View>
-              </View>
-            </Card>
-            
-            <Card
-              variant="student"
-              onPress={handleStudentSelect}
-              style={styles.selectionCard}
-            >
-              <View style={styles.cardContent}>
-                <Text style={styles.cardIcon}>🎓</Text>
-                <Text style={styles.cardTitle}>Student</Text>
-                <Text style={styles.cardDescription}>
-                  Play educational games and learn while having fun
-                </Text>
-                <View style={styles.cardFeatures}>
-                  <Text style={styles.featureText}>• Play learning games</Text>
-                  <Text style={styles.featureText}>• Earn points & badges</Text>
-                  <Text style={styles.featureText}>• Learn offline</Text>
-                </View>
-              </View>
-            </Card>
-          </View>
-          
-          {/* Footer */}
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
-              Optimized for rural areas with low connectivity
-            </Text>
-          </View>
+          <Text style={styles.tagline}>Learn • Play • Grow</Text>
         </View>
-      </SafeAreaView>
-    </>
+        
+        {/* Selection Cards */}
+        <View style={styles.selectionContainer}>
+          <Text style={styles.selectionTitle}>Choose Your Role</Text>
+          
+          <Card
+            variant="teacher"
+            onPress={handleTeacherSelect}
+            style={styles.selectionCard}
+            elevation="high"
+          >
+            <View style={styles.cardContent}>
+              <Icon name="school" size={48} color={COLORS.white} style={styles.cardIcon} />
+              <Text style={styles.cardTitle}>Teacher</Text>
+              <View style={styles.quickFeatures}>
+                <View style={styles.featureItem}>
+                  <Icon name="add-circle" size={16} color={COLORS.accent} />
+                  <Text style={styles.featureText}>Create Games</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <Icon name="people" size={16} color={COLORS.accent} />
+                  <Text style={styles.featureText}>Manage Students</Text>
+                </View>
+              </View>
+            </View>
+          </Card>
+          
+          <Card
+            variant="student"
+            onPress={handleStudentSelect}
+            style={styles.selectionCard}
+            elevation="high"
+          >
+            <View style={styles.cardContent}>
+              <Icon name="sports-esports" size={48} color={COLORS.white} style={styles.cardIcon} />
+              <Text style={styles.cardTitle}>Student</Text>
+              <View style={styles.quickFeatures}>
+                <View style={styles.featureItem}>
+                  <Icon name="videogame-asset" size={16} color={COLORS.accent} />
+                  <Text style={styles.featureText}>Play Games</Text>
+                </View>
+                <View style={styles.featureItem}>
+                  <Icon name="emoji-events" size={16} color={COLORS.accent} />
+                  <Text style={styles.featureText}>Earn Badges</Text>
+                </View>
+              </View>
+            </View>
+          </Card>
+        </View>
+        
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Icon name="offline-bolt" size={18} color={COLORS.textLight} />
+          <Text style={styles.footerText}>Works Offline</Text>
+        </View>
+        </View>
+      </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.authBackground,
+    paddingTop: Platform.OS === 'ios' ? 44 : StatusBar.currentHeight || 24,
   },
   
   content: {
@@ -103,28 +107,28 @@ const styles = StyleSheet.create({
   
   header: {
     alignItems: 'center',
-    marginTop: SPACING.xxxl,
+    marginTop: SPACING.xl,
+  },
+
+  logoContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: SPACING.sm,
   },
   
   appName: {
     ...TEXT_STYLES.hero,
     color: COLORS.primary,
-    marginBottom: SPACING.sm,
+    marginLeft: SPACING.sm,
     textAlign: 'center',
+    fontWeight: 'bold',
   },
   
   tagline: {
     ...TEXT_STYLES.subtitle,
-    color: COLORS.secondary,
-    marginBottom: SPACING.md,
+    color: "black",
     textAlign: 'center',
-  },
-  
-  description: {
-    ...TEXT_STYLES.body,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
-    maxWidth: 280,
+    fontWeight: '600',
   },
   
   selectionContainer: {
@@ -138,55 +142,74 @@ const styles = StyleSheet.create({
     color: COLORS.text,
     textAlign: 'center',
     marginBottom: SPACING.xl,
+    fontWeight: 'bold',
   },
   
   selectionCard: {
     marginBottom: SPACING.lg,
+    transform: [{ scale: 1 }],
+    backgroundColor: COLORS.tertiary,
+    color: COLORS.white,
+    
+    // borderColor: COLORS.tertiary,
   },
   
   cardContent: {
     alignItems: 'center',
-    padding: SPACING.lg,
+    padding: SPACING.xl,
   },
-  
+
   cardIcon: {
-    fontSize: 48,
     marginBottom: SPACING.md,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 2, height: 2 },
+    textShadowRadius: 4,
   },
   
   cardTitle: {
     ...TEXT_STYLES.subtitle,
     color: COLORS.text,
-    marginBottom: SPACING.sm,
-    textAlign: 'center',
-  },
-  
-  cardDescription: {
-    ...TEXT_STYLES.body,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
     marginBottom: SPACING.md,
+    textAlign: 'center',
+    fontWeight: 'bold',
   },
   
-  cardFeatures: {
-    alignItems: 'flex-start',
+  quickFeatures: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    width: '100%',
+    marginTop: SPACING.sm,
+  },
+
+  featureItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: COLORS.white + '20',
+    paddingHorizontal: SPACING.sm,
+    paddingVertical: SPACING.xs,
+    borderRadius: 20,
+    marginHorizontal: SPACING.xs,
   },
   
   featureText: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.textSecondary,
-    marginBottom: SPACING.xs,
+    ...TEXT_STYLES.caption,
+    color: COLORS.text,
+    marginLeft: SPACING.xs,
+    fontWeight: '600',
   },
   
   footer: {
+    flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     paddingBottom: SPACING.lg,
   },
   
   footerText: {
     ...TEXT_STYLES.caption,
     color: COLORS.textLight,
-    textAlign: 'center',
+    marginLeft: SPACING.xs,
+    fontWeight: '600',
   },
 });
 

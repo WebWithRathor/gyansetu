@@ -244,13 +244,13 @@ const styles = StyleSheet.create({
   cardTeacher: {
     backgroundColor: '#e8f5e8',
     borderLeftWidth: 6,
-    borderLeftColor: '#28a745',
+    // borderLeftColor: '#28a745',
     shadowColor: '#28a745',
   },
   cardStudent: {
     backgroundColor: '#fff3cd',
     borderLeftWidth: 6,
-    borderLeftColor: '#ffc107',
+    // borderLeftColor: '#ffc107',
     shadowColor: '#ffc107',
   },
   

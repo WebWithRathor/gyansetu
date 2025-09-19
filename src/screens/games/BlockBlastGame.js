@@ -7,7 +7,6 @@ import {
   TouchableOpacity, 
   Vibration
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Button, Modal } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -358,11 +357,11 @@ const BlockBlastGame = ({ navigation, route }) => {
   
   if (!game?.questions) {
     return (
-      <SafeAreaView style={styles.container}>
+      <View style={styles.container}>
         <Header
           title="Block Blast Game"
           subtitle="No game data"
-          variant="game"
+          variant="student"
           showBackButton
           onLeftPress={() => navigation.goBack()}
         />
@@ -374,16 +373,16 @@ const BlockBlastGame = ({ navigation, route }) => {
             variant="primary"
           />
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
   
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Block Blast Game"
         subtitle={game?.title || 'Game Title'}
-        variant="game"
+        variant="student"
         showBackButton
         onLeftPress={() => navigation.goBack()}
       />
@@ -509,14 +508,14 @@ const BlockBlastGame = ({ navigation, route }) => {
           </View>
         )}
       </Modal>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.studentBackground,
   },
   
   errorContainer: {

@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, StatusBar, Platform, Animated } from 'react-native';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
@@ -77,15 +78,15 @@ const Header = ({
     
     switch (variant) {
       case 'teacher':
-        return '#4a5bb8';
+        return COLORS.teacherBackgroundDark;
       case 'student':
-        return '#28a745';
+        return COLORS.studentBackgroundDark;
       case 'game':
         return '#8e44ad';
       case 'transparent':
         return COLORS.transparent;
       default:
-        return '#ffd29d';
+        return COLORS.authBackgroundDark;
     }
   };
   
@@ -115,7 +116,7 @@ const Header = ({
           >
             {/* Highlight overlay for 3D effect */}
             <View style={styles.buttonHighlight} />
-            <Text style={[styles.backIcon, { color: getTextColor() }]}>←</Text>
+            <Icon name="arrow-back" size={24} color={getTextColor()} style={styles.backIcon} />
             {/* Inner shadow for depth */}
             <View style={styles.buttonInnerShadow} />
           </TouchableOpacity>
@@ -242,16 +243,16 @@ const styles = StyleSheet.create({
   
   // Variant styles
   headerDefault: {
-    backgroundColor: '#ffd29d',
-    shadowColor: '#ffd29d',
+    backgroundColor: COLORS.authBackgroundDark,
+    shadowColor: COLORS.authBackgroundDark,
   },
   headerTeacher: {
-    backgroundColor: '#4a5bb8',
-    shadowColor: '#4a5bb8',
+    backgroundColor: COLORS.teacherBackgroundDark,
+    shadowColor: COLORS.teacherBackgroundDark,
   },
   headerStudent: {
-    backgroundColor: '#28a745',
-    shadowColor: '#28a745',
+    backgroundColor: COLORS.studentBackgroundDark,
+    shadowColor: COLORS.studentBackgroundDark,
   },
   headerGame: {
     backgroundColor: '#8e44ad',
@@ -324,8 +325,6 @@ const styles = StyleSheet.create({
   },
   
   backIcon: {
-    fontSize: 24,
-    fontWeight: 'bold',
     zIndex: 2,
     textShadowColor: 'rgba(0, 0, 0, 0.3)',
     textShadowOffset: { width: 0, height: 1 },

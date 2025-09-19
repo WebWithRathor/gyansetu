@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Button, Input, Header, Card } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
@@ -8,6 +7,7 @@ import { TEXT_STYLES } from '../../constants/typography';
 import { validateGrade } from '../../utils/helpers';
 import { addClass } from '../../utils/storage';
 import { useApp } from '../../context/AppContext';
+import Icon from 'react-native-vector-icons/MaterialIcons';
 
 const CreateClass = ({ navigation }) => {
   const { teacherData } = useApp();
@@ -95,7 +95,7 @@ const CreateClass = ({ navigation }) => {
   };
   
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Create Class"
         variant="teacher"
@@ -108,7 +108,7 @@ const CreateClass = ({ navigation }) => {
           {/* Header Card */}
           <Card variant="teacher" style={styles.headerCard}>
             <View style={styles.headerContent}>
-              <Text style={styles.headerIcon}>🏫</Text>
+              <Icon name="school" size={48} color={COLORS.primary} />
               <View style={styles.headerText}>
                 <Text style={styles.headerTitle}>Create New Class</Text>
                 <Text style={styles.headerSubtitle}>
@@ -126,7 +126,7 @@ const CreateClass = ({ navigation }) => {
               value={formData.className}
               onChangeText={(text) => updateFormData('className', text)}
               error={errors.className}
-              leftIcon={<Text style={styles.inputIcon}>📚</Text>}
+              leftIcon={<Icon name="class" size={20} color={COLORS.primary} />}
             />
             
             <View style={styles.row}>
@@ -160,7 +160,7 @@ const CreateClass = ({ navigation }) => {
               value={formData.subject}
               onChangeText={(text) => updateFormData('subject', text)}
               error={errors.subject}
-              leftIcon={<Text style={styles.inputIcon}>📖</Text>}
+              leftIcon={<Icon name="book" size={20} color={COLORS.primary} />}
             />
             
             <View style={styles.subjectSuggestions}>
@@ -186,7 +186,7 @@ const CreateClass = ({ navigation }) => {
               onChangeText={(text) => updateFormData('description', text)}
               multiline
               numberOfLines={3}
-              leftIcon={<Text style={styles.inputIcon}>📝</Text>}
+              leftIcon={<Icon name="description" size={20} color={COLORS.primary} />}
             />
           </View>
           
@@ -213,7 +213,7 @@ const CreateClass = ({ navigation }) => {
           {/* Info Section */}
           <Card variant="filled" style={styles.infoCard}>
             <View style={styles.infoContent}>
-              <Text style={styles.infoIcon}>💡</Text>
+              <Icon name="lightbulb" size={32} color={COLORS.warning} />
               <Text style={styles.infoTitle}>Next Steps</Text>
               <Text style={styles.infoText}>
                 After creating your class:{'\n'}
@@ -225,14 +225,14 @@ const CreateClass = ({ navigation }) => {
           </Card>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#ffd29d',
+    backgroundColor: COLORS.teacherBackground,
   },
   
   scrollView: {
@@ -254,11 +254,6 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
   },
   
-  headerIcon: {
-    fontSize: 48,
-    marginRight: SPACING.lg,
-  },
-  
   headerText: {
     flex: 1,
   },
@@ -277,10 +272,6 @@ const styles = StyleSheet.create({
   // Form Section
   formSection: {
     marginBottom: SPACING.xl,
-  },
-  
-  inputIcon: {
-    fontSize: 20,
   },
   
   row: {
@@ -355,11 +346,6 @@ const styles = StyleSheet.create({
   infoContent: {
     padding: SPACING.lg,
     alignItems: 'center',
-  },
-  
-  infoIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.md,
   },
   
   infoTitle: {

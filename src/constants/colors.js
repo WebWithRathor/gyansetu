@@ -3,6 +3,7 @@ export const COLORS = {
   // Primary Colors - Bright and Solid
   primary: '#3498DB',        // Bright Blue
   secondary: '#E74C3C',      // Bright Red
+  tertiary: '#a8d2f6ff',       // Bright Green
   accent: '#F39C12',         // Bright Orange
   
   // Success and Error
@@ -14,6 +15,16 @@ export const COLORS = {
   background: '#FFFFFF',     // Pure White
   surface: '#F8F9FA',        // Light Gray
   card: '#FFFFFF',           // Pure White
+  
+  // Page-specific backgrounds
+  authBackground: '#E6F3FF',    // Whitish blue for auth pages
+  authBackgroundDark: '#B3D9FF', // Darker whitish blue for auth headers
+  
+  studentBackground: '#e9e6ffff', // Light coral for student pages
+  studentBackgroundDark: '#9f7fffff', // Darker coral for student headers
+  
+  teacherBackground: '#E6F7FF', // Light sky blue for teacher pages
+  teacherBackgroundDark: '#87CEEB', // Darker sky blue for teacher headers
   
   // Text Colors
   text: '#2C3E50',           // Dark Blue-Gray
