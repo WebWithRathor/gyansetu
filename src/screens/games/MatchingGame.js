@@ -5,7 +5,6 @@ import {
   StyleSheet, 
   Animated, 
   TouchableOpacity, 
-  Alert, 
   Vibration
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -23,6 +22,7 @@ const MatchingGame = ({ navigation, route }) => {
   const [questions, setQuestions] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [matches, setMatches] = useState([]);
+  const [totalQuestions, setTotalQuestions] = useState(0);
   const [score, setScore] = useState(0);
   const [timeLeft, setTimeLeft] = useState(180); // 3 minutes
   const [gameStarted, setGameStarted] = useState(false);
@@ -39,7 +39,7 @@ const MatchingGame = ({ navigation, route }) => {
   const initializeGame = useCallback(() => {
     if (!game?.questions) return;
     
-    const gameQuestions = shuffleArray([...game.questions]).slice(0, 6);
+    const gameQuestions = shuffleArray([...game.questions]).slice(0, Math.min(6, game.questions.length));
     
     const questionCards = gameQuestions.map((q, index) => ({
       id: `q_${index}`,
@@ -61,6 +61,9 @@ const MatchingGame = ({ navigation, route }) => {
     setAnswers(shuffleArray(answerCards));
     setMatches([]);
     setScore(0);
+    
+    // Store the expected number of matches for game completion
+    setTotalQuestions(gameQuestions.length);
   }, [game?.questions]);
   
   const endGame = useCallback(async () => {
@@ -70,7 +73,7 @@ const MatchingGame = ({ navigation, route }) => {
       studentId: studentData?.id,
       gameId: game?.id,
       score: score,
-      totalQuestions: questions.length,
+      totalQuestions: totalQuestions,
       correctAnswers: matches.length,
       timeSpent: 180 - timeLeft,
       gameType: 'matching',
@@ -83,21 +86,13 @@ const MatchingGame = ({ navigation, route }) => {
       console.error('Error saving score:', error);
     }
     
-    Alert.alert(
-      'Game Complete!',
-      `Your Score: ${score} points\nMatches: ${matches.length}/${questions.length}\nTime: ${Math.floor((180 - timeLeft) / 60)}:${String((180 - timeLeft) % 60).padStart(2, '0')}`,
-      [
-        { text: 'Play Again', onPress: () => {
-          initializeGame();
-          setGameStarted(false);
-          setGameEnded(false);
-          setTimeLeft(180);
-          setShowInstructions(true);
-        }},
-        { text: 'Back to Games', onPress: () => navigation.goBack() }
-      ]
-    );
-  }, [score, questions.length, matches.length, timeLeft, studentData?.id, game?.id, initializeGame, navigation]);
+    // Navigate to ScoreFeedback with results
+    navigation.navigate('ScoreFeedback', {
+      gameResults: finalScore,
+      studentData: studentData,
+      game: game
+    });
+  }, [score, totalQuestions, matches.length, timeLeft, studentData, game, navigation]);
   
   useEffect(() => {
     initializeGame();
@@ -125,23 +120,33 @@ const MatchingGame = ({ navigation, route }) => {
   };
   
   const handleCardPress = (card) => {
-    if (card.matched) return;
+    console.log('Card pressed:', card.id, card.type, 'matched:', card.matched);
+    if (card.matched) {
+      console.log('Card already matched, returning');
+      return;
+    }
     
     if (card.type === 'question') {
       if (selectedQuestion?.id === card.id) {
+        console.log('Deselecting question');
         setSelectedQuestion(null);
       } else {
+        console.log('Selecting question:', card.id);
         setSelectedQuestion(card);
         if (selectedAnswer) {
+          console.log('Checking match with answer:', selectedAnswer.id);
           checkMatch(card, selectedAnswer);
         }
       }
     } else {
       if (selectedAnswer?.id === card.id) {
+        console.log('Deselecting answer');
         setSelectedAnswer(null);
       } else {
+        console.log('Selecting answer:', card.id);
         setSelectedAnswer(card);
         if (selectedQuestion) {
+          console.log('Checking match with question:', selectedQuestion.id);
           checkMatch(selectedQuestion, card);
         }
       }
@@ -149,12 +154,18 @@ const MatchingGame = ({ navigation, route }) => {
   };
   
   const checkMatch = (question, answer) => {
+    console.log('Checking match between:', question.id, 'and', answer.id);
+    console.log('Question correctAnswerId:', question.correctAnswerId);
+    console.log('Answer id:', answer.id);
+    
     const isCorrect = question.correctAnswerId === answer.id;
+    console.log('Is match correct?', isCorrect);
     
     if (isCorrect) {
       // Correct match
       const newMatches = [...matches, { questionId: question.id, answerId: answer.id }];
       setMatches(newMatches);
+      console.log('Updated matches:', newMatches.length, '/', totalQuestions);
       
       // Update cards as matched
       setQuestions(prev => prev.map(q => 
@@ -179,11 +190,13 @@ const MatchingGame = ({ navigation, route }) => {
       ]).start();
       
       // Check if game is complete
-      if (newMatches.length === questions.length) {
+      if (newMatches.length === totalQuestions) {
+        console.log('Game complete! Ending...');
         setTimeout(() => endGame(), 1000);
       }
     } else {
       // Wrong match
+      console.log('Wrong match!');
       setFeedback({ type: 'error', message: 'Try again!' });
       Vibration.vibrate([100, 100, 100]);
       
@@ -270,7 +283,7 @@ const MatchingGame = ({ navigation, route }) => {
           <View style={styles.gameInfo}>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Questions:</Text>
-              <Text style={styles.infoValue}>{questions.length}</Text>
+              <Text style={styles.infoValue}>{totalQuestions || game?.questions?.length || 0}</Text>
             </View>
             <View style={styles.infoRow}>
               <Text style={styles.infoLabel}>Time Limit:</Text>
@@ -303,7 +316,7 @@ const MatchingGame = ({ navigation, route }) => {
             <View style={styles.progressContainer}>
               <Text style={styles.progressLabel}>Matches</Text>
               <Text style={styles.progressValue}>
-                {matches.length} / {questions.length}
+                {matches.length} / {totalQuestions}
               </Text>
             </View>
             

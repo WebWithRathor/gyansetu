@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Card, Header } from '../../components/common';
+import { Card, Header, Button } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
@@ -22,7 +22,7 @@ const StudentDashboard = ({ navigation }) => {
   
   const loadDashboardData = async () => {
     try {
-      // Mock data - replace with actual API calls
+      // Mock data with complete game questions for testing
       const mockGames = [
         {
           id: 'game_1',
@@ -35,6 +35,48 @@ const StudentDashboard = ({ navigation }) => {
           isCompleted: false,
           isDownloaded: true,
           icon: '🔢',
+          questions: [
+            {
+              id: 'q1',
+              question: 'What is 12 + 8?',
+              options: ['18', '20', '22', '24'],
+              correctAnswer: 1,
+              explanation: '12 + 8 = 20',
+              type: 'matching',
+            },
+            {
+              id: 'q2',
+              question: 'What is 15 - 7?',
+              options: ['6', '7', '8', '9'],
+              correctAnswer: 2,
+              explanation: '15 - 7 = 8',
+              type: 'matching',
+            },
+            {
+              id: 'q3',
+              question: 'What is 6 × 4?',
+              options: ['20', '22', '24', '26'],
+              correctAnswer: 2,
+              explanation: '6 × 4 = 24',
+              type: 'matching',
+            },
+            {
+              id: 'q4',
+              question: 'What is 36 ÷ 6?',
+              options: ['5', '6', '7', '8'],
+              correctAnswer: 1,
+              explanation: '36 ÷ 6 = 6',
+              type: 'matching',
+            },
+            {
+              id: 'q5',
+              question: 'Which number comes next: 2, 4, 6, 8, ?',
+              options: ['9', '10', '11', '12'],
+              correctAnswer: 1,
+              explanation: 'This is an even number sequence, so 10 comes next.',
+              type: 'matching',
+            }
+          ]
         },
         {
           id: 'game_2',
@@ -48,6 +90,48 @@ const StudentDashboard = ({ navigation }) => {
           score: 85,
           isDownloaded: true,
           icon: '🧪',
+          questions: [
+            {
+              id: 'q1',
+              question: 'What gas do plants absorb during photosynthesis?',
+              options: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'],
+              correctAnswer: 1,
+              explanation: 'Plants absorb carbon dioxide and release oxygen during photosynthesis.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q2',
+              question: 'What is the largest planet in our solar system?',
+              options: ['Earth', 'Jupiter', 'Saturn', 'Mars'],
+              correctAnswer: 1,
+              explanation: 'Jupiter is the largest planet in our solar system.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q3',
+              question: 'Which organ pumps blood throughout the human body?',
+              options: ['Brain', 'Heart', 'Lungs', 'Liver'],
+              correctAnswer: 1,
+              explanation: 'The heart pumps blood throughout the human body.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q4',
+              question: 'What do we call animals that eat only plants?',
+              options: ['Carnivores', 'Herbivores', 'Omnivores', 'Predators'],
+              correctAnswer: 1,
+              explanation: 'Animals that eat only plants are called herbivores.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q5',
+              question: 'How many bones are in an adult human body approximately?',
+              options: ['106', '156', '206', '256'],
+              correctAnswer: 2,
+              explanation: 'An adult human body has approximately 206 bones.',
+              type: 'blockblast',
+            }
+          ]
         },
         {
           id: 'game_3',
@@ -58,8 +142,42 @@ const StudentDashboard = ({ navigation }) => {
           totalQuestions: 12,
           estimatedTime: '8-12 min',
           isCompleted: false,
-          isDownloaded: false,
+          isDownloaded: true,
           icon: '📚',
+          questions: [
+            {
+              id: 'q1',
+              question: 'Which of these is a noun?',
+              options: ['Run', 'Beautiful', 'Cat', 'Quickly'],
+              correctAnswer: 2,
+              explanation: 'Cat is a noun because it names a thing (animal).',
+              type: 'matching',
+            },
+            {
+              id: 'q2',
+              question: 'What is the plural of "child"?',
+              options: ['Childs', 'Children', 'Childes', 'Child'],
+              correctAnswer: 1,
+              explanation: 'The plural of "child" is "children".',
+              type: 'matching',
+            },
+            {
+              id: 'q3',
+              question: 'Which word is an adjective?',
+              options: ['Sing', 'Happy', 'Book', 'Dance'],
+              correctAnswer: 1,
+              explanation: 'Happy is an adjective because it describes how someone feels.',
+              type: 'matching',
+            },
+            {
+              id: 'q4',
+              question: 'Complete: "She _____ to school every day."',
+              options: ['go', 'goes', 'going', 'gone'],
+              correctAnswer: 1,
+              explanation: 'With "she" (third person singular), we use "goes".',
+              type: 'matching',
+            }
+          ]
         },
       ];
       
@@ -107,9 +225,15 @@ const StudentDashboard = ({ navigation }) => {
     }
     
     if (game.type === 'matching') {
-      navigation.navigate('MatchingGame', { game });
+      navigation.navigate('MatchingGame', { 
+        game: game,
+        studentData: studentData 
+      });
     } else if (game.type === 'blockblast') {
-      navigation.navigate('BlockBlastGame', { game });
+      navigation.navigate('BlockBlastGame', { 
+        game: game,
+        studentData: studentData 
+      });
     }
   };
   
@@ -184,7 +308,16 @@ const StudentDashboard = ({ navigation }) => {
           
           {/* Available Games */}
           <View style={styles.gamesSection}>
-            <Text style={styles.sectionTitle}>Available Games</Text>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>Available Games</Text>
+              <Button
+                title="View All"
+                variant="ghost"
+                size="small"
+                onPress={() => navigation.navigate('GameSelection')}
+                style={styles.viewAllButton}
+              />
+            </View>
             {dashboardData.availableGames.length > 0 ? (
               dashboardData.availableGames.map((game) => (
                 <Card
@@ -355,13 +488,27 @@ const styles = StyleSheet.create({
     marginBottom: SPACING.lg,
   },
   
-  statsRow: {
+  sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: SPACING.lg,
+  },
+  
+  viewAllButton: {
+    paddingHorizontal: 0,
+  },
+  
+  statsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'start',
   },
   
   statCard: {
-    flex: 1,
+    width:"47%",
+    height: 120,
+    backgroundColor:"skyblue",
     marginHorizontal: SPACING.xs,
   },
   

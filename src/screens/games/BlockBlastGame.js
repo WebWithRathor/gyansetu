@@ -5,7 +5,6 @@ import {
   StyleSheet, 
   Animated, 
   TouchableOpacity, 
-  Alert, 
   Vibration
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -36,6 +35,7 @@ const BlockBlastGame = ({ navigation, route }) => {
   // Game state
   const [grid, setGrid] = useState(Array(GRID_SIZE).fill().map(() => Array(GRID_SIZE).fill(0)));
   const [currentBlocks, setCurrentBlocks] = useState([]);
+  const [selectedBlockId, setSelectedBlockId] = useState(null);
   const [score, setScore] = useState(0);
   const [lines, setLines] = useState(0);
   const [gameStarted, setGameStarted] = useState(false);
@@ -81,6 +81,8 @@ const BlockBlastGame = ({ navigation, route }) => {
       });
     }
     setCurrentBlocks(newBlocks);
+    // Auto-select the first block
+    setSelectedBlockId(newBlocks[0]?.id || null);
   };
   
   const startGame = () => {
@@ -133,6 +135,14 @@ const BlockBlastGame = ({ navigation, route }) => {
     setCurrentBlocks(prev => prev.map(b => 
       b.id === blockId ? { ...b, used: true } : b
     ));
+    
+    // Auto-select next available block
+    const remainingBlocks = currentBlocks.filter(b => b.id !== blockId && !b.used);
+    if (remainingBlocks.length > 0) {
+      setSelectedBlockId(remainingBlocks[0].id);
+    } else {
+      setSelectedBlockId(null);
+    }
     
     setMovesCount(prev => prev + 1);
     
@@ -208,10 +218,12 @@ const BlockBlastGame = ({ navigation, route }) => {
     if (correct) {
       setQuestionStreak(prev => prev + 1);
       setScore(prev => prev + 50);
-      Alert.alert('Correct!', '+50 bonus points!');
+      // Show success feedback without blocking Alert
+      console.log('Correct answer! +50 bonus points!');
     } else {
       setQuestionStreak(0);
-      Alert.alert('Incorrect', `Correct answer: ${currentQuestion.options[currentQuestion.correctAnswer]}`);
+      // Show correct answer feedback without blocking Alert
+      console.log(`Incorrect. Correct answer: ${currentQuestion.options[currentQuestion.correctAnswer]}`);
     }
     
     setShowQuestionModal(false);
@@ -254,19 +266,13 @@ const BlockBlastGame = ({ navigation, route }) => {
       console.error('Error saving score:', error);
     }
     
-    Alert.alert(
-      'Game Over!',
-      `Final Score: ${score} points\nLines Cleared: ${lines}\nMoves: ${movesCount}\nQuestion Streak: ${questionStreak}`,
-      [
-        { text: 'Play Again', onPress: () => {
-          initializeGame();
-          setGameStarted(false);
-          setShowInstructions(true);
-        }},
-        { text: 'Back to Games', onPress: () => navigation.goBack() }
-      ]
-    );
-  }, [score, lines, movesCount, questionStreak, studentData?.id, game?.id, initializeGame, navigation]);
+    // Navigate to ScoreFeedback with results
+    navigation.navigate('ScoreFeedback', {
+      gameResults: finalScore,
+      studentData: studentData,
+      game: game
+    });
+  }, [score, lines, movesCount, questionStreak, studentData, game, navigation]);
   
   const renderGrid = () => {
     return grid.map((row, rowIndex) => (
@@ -284,9 +290,11 @@ const BlockBlastGame = ({ navigation, route }) => {
               style={cellStyle}
               onPress={() => {
                 // Handle block placement logic here
-                const selectedBlock = currentBlocks.find(b => !b.used);
-                if (selectedBlock) {
-                  placeBlock(selectedBlock.id, rowIndex, colIndex);
+                if (selectedBlockId) {
+                  const selectedBlock = currentBlocks.find(b => b.id === selectedBlockId && !b.used);
+                  if (selectedBlock) {
+                    placeBlock(selectedBlock.id, rowIndex, colIndex);
+                  }
                 }
               }}
             />
@@ -298,9 +306,22 @@ const BlockBlastGame = ({ navigation, route }) => {
   
   const renderBlocks = () => {
     return currentBlocks.map((block, index) => (
-      <View key={block.id} style={styles.blockContainer}>
+      <TouchableOpacity 
+        key={block.id} 
+        style={styles.blockContainer}
+        onPress={() => {
+          if (!block.used) {
+            setSelectedBlockId(block.id);
+          }
+        }}
+        disabled={block.used}
+      >
         <Text style={styles.blockLabel}>Block {index + 1}</Text>
-        <View style={[styles.blockPreview, block.used && styles.blockUsed]}>
+        <View style={[
+          styles.blockPreview, 
+          block.used && styles.blockUsed,
+          selectedBlockId === block.id && !block.used && styles.blockSelected
+        ]}>
           {block.shape.map((row, rowIndex) => (
             <View key={rowIndex} style={styles.blockRow}>
               {row.map((cell, colIndex) => {
@@ -320,7 +341,7 @@ const BlockBlastGame = ({ navigation, route }) => {
             </View>
           ))}
         </View>
-      </View>
+      </TouchableOpacity>
     ));
   };
   
@@ -653,6 +674,12 @@ const styles = StyleSheet.create({
   
   blockUsed: {
     opacity: 0.3,
+  },
+  
+  blockSelected: {
+    borderWidth: 2,
+    borderColor: COLORS.primary,
+    backgroundColor: COLORS.primary + '10',
   },
   
   blockRow: {

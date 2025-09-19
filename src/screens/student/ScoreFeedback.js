@@ -8,21 +8,31 @@ import { TEXT_STYLES } from '../../constants/typography';
 import { getScoreEmoji, formatTime } from '../../utils/helpers';
 
 const ScoreFeedback = ({ navigation, route }) => {
-  const { 
-    score = 0, 
-    totalQuestions = 10, 
-    correctAnswers = 0,
-    wrongAnswers = 0,
-    timeTaken = 0,
-    gameTitle = 'Quiz Game',
-    difficulty = 'Easy'
-  } = route?.params || {};
+  const { gameResults, game } = route?.params || {};
+  
+  // Extract data from gameResults or use defaults
+  const score = gameResults?.score || 0;
+  const totalQuestions = gameResults?.totalQuestions || gameResults?.linesCleared || 10;
+  const correctAnswers = gameResults?.correctAnswers || gameResults?.questionStreak || 0;
+  const timeTaken = gameResults?.timeSpent || 0;
+  const gameTitle = game?.title || 'Quiz Game';
+  const difficulty = game?.difficulty || 'Easy';
+  const gameType = gameResults?.gameType || 'matching';
+  
+  // For BlockBlast games, show different metrics
+  const isBlockBlast = gameType === 'blockblast';
+  const linesCleared = gameResults?.linesCleared || 0;
+  const moves = gameResults?.moves || 0;
+  const questionStreak = gameResults?.questionStreak || 0;
+  const wrongAnswers = isBlockBlast ? 0 : Math.max(0, totalQuestions - correctAnswers);
   
   const [animatedValue] = useState(new Animated.Value(0));
   const [showDetails, setShowDetails] = useState(false);
   
-  const percentage = Math.round((score / totalQuestions) * 100);
-  const emoji = getScoreEmoji(score, totalQuestions);
+  const percentage = isBlockBlast 
+    ? Math.min(100, Math.round((score / 500) * 100)) // For block blast, assume 500 is max reasonable score
+    : Math.round((correctAnswers / totalQuestions) * 100);
+  const emoji = getScoreEmoji(correctAnswers, totalQuestions);
   
   useEffect(() => {
     // Animate score reveal
@@ -147,31 +157,61 @@ const ScoreFeedback = ({ navigation, route }) => {
               
               <Card style={styles.analyticsCard}>
                 <View style={styles.analyticsGrid}>
-                  <View style={styles.analyticItem}>
-                    <Text style={styles.analyticIcon}>✅</Text>
-                    <Text style={styles.analyticValue}>{correctAnswers}</Text>
-                    <Text style={styles.analyticLabel}>Correct</Text>
-                  </View>
-                  
-                  <View style={styles.analyticItem}>
-                    <Text style={styles.analyticIcon}>❌</Text>
-                    <Text style={styles.analyticValue}>{wrongAnswers}</Text>
-                    <Text style={styles.analyticLabel}>Wrong</Text>
-                  </View>
-                  
-                  <View style={styles.analyticItem}>
-                    <Text style={styles.analyticIcon}>⏱️</Text>
-                    <Text style={styles.analyticValue}>
-                      {timeTaken > 0 ? formatTime(timeTaken) : '--'}
-                    </Text>
-                    <Text style={styles.analyticLabel}>Time</Text>
-                  </View>
-                  
-                  <View style={styles.analyticItem}>
-                    <Text style={styles.analyticIcon}>🎯</Text>
-                    <Text style={styles.analyticValue}>{Math.round((correctAnswers / totalQuestions) * 100)}%</Text>
-                    <Text style={styles.analyticLabel}>Accuracy</Text>
-                  </View>
+                  {isBlockBlast ? (
+                    <>
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>🧩</Text>
+                        <Text style={styles.analyticValue}>{linesCleared}</Text>
+                        <Text style={styles.analyticLabel}>Lines Cleared</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>🎯</Text>
+                        <Text style={styles.analyticValue}>{moves}</Text>
+                        <Text style={styles.analyticLabel}>Moves</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>🔥</Text>
+                        <Text style={styles.analyticValue}>{questionStreak}</Text>
+                        <Text style={styles.analyticLabel}>Question Streak</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>📊</Text>
+                        <Text style={styles.analyticValue}>{score}</Text>
+                        <Text style={styles.analyticLabel}>Total Score</Text>
+                      </View>
+                    </>
+                  ) : (
+                    <>
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>✅</Text>
+                        <Text style={styles.analyticValue}>{correctAnswers}</Text>
+                        <Text style={styles.analyticLabel}>Correct</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>❌</Text>
+                        <Text style={styles.analyticValue}>{wrongAnswers}</Text>
+                        <Text style={styles.analyticLabel}>Wrong</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>⏱️</Text>
+                        <Text style={styles.analyticValue}>
+                          {timeTaken > 0 ? formatTime(timeTaken) : '--'}
+                        </Text>
+                        <Text style={styles.analyticLabel}>Time</Text>
+                      </View>
+                      
+                      <View style={styles.analyticItem}>
+                        <Text style={styles.analyticIcon}>🎯</Text>
+                        <Text style={styles.analyticValue}>{Math.round((correctAnswers / totalQuestions) * 100)}%</Text>
+                        <Text style={styles.analyticLabel}>Accuracy</Text>
+                      </View>
+                    </>
+                  )}
                 </View>
               </Card>
             </View>

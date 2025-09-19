@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Header, Card, Input, Button } from '../../components/common';
@@ -25,11 +25,11 @@ const GameSelection = ({ navigation }) => {
 
   useEffect(() => {
     filterGames();
-  }, [games, searchQuery, selectedSubject, selectedDifficulty]);
+  }, [games, searchQuery, selectedSubject, selectedDifficulty, filterGames]);
 
   const loadAvailableGames = async () => {
     try {
-      // Mock game data - replace with API call
+      // Mock game data with complete questions for testing
       const mockGames = [
         {
           id: 'game_1',
@@ -37,7 +37,7 @@ const GameSelection = ({ navigation }) => {
           subject: 'Mathematics',
           type: 'matching',
           difficulty: 'Easy',
-          totalQuestions: 10,
+          totalQuestions: 5,
           estimatedTime: '5-8 min',
           description: 'Basic arithmetic operations and number patterns',
           isDownloaded: true,
@@ -46,6 +46,48 @@ const GameSelection = ({ navigation }) => {
           rating: 4.5,
           playCount: 125,
           tags: ['arithmetic', 'basic'],
+          questions: [
+            {
+              id: 'q1',
+              question: 'What is 12 + 8?',
+              options: ['18', '20', '22', '24'],
+              correctAnswer: 1,
+              explanation: '12 + 8 = 20',
+              type: 'matching',
+            },
+            {
+              id: 'q2',
+              question: 'What is 15 - 7?',
+              options: ['6', '7', '8', '9'],
+              correctAnswer: 2,
+              explanation: '15 - 7 = 8',
+              type: 'matching',
+            },
+            {
+              id: 'q3',
+              question: 'What is 6 × 4?',
+              options: ['20', '22', '24', '26'],
+              correctAnswer: 2,
+              explanation: '6 × 4 = 24',
+              type: 'matching',
+            },
+            {
+              id: 'q4',
+              question: 'What is 36 ÷ 6?',
+              options: ['5', '6', '7', '8'],
+              correctAnswer: 1,
+              explanation: '36 ÷ 6 = 6',
+              type: 'matching',
+            },
+            {
+              id: 'q5',
+              question: 'Which number comes next: 2, 4, 6, 8, ?',
+              options: ['9', '10', '11', '12'],
+              correctAnswer: 1,
+              explanation: 'This is an even number sequence, so 10 comes next.',
+              type: 'matching',
+            }
+          ]
         },
         {
           id: 'game_2',
@@ -53,15 +95,57 @@ const GameSelection = ({ navigation }) => {
           subject: 'Science',
           type: 'blockblast',
           difficulty: 'Medium',
-          totalQuestions: 15,
+          totalQuestions: 5,
           estimatedTime: '10-15 min',
           description: 'Explore the wonders of basic science concepts',
           isDownloaded: true,
-          isCompleted: true,
+          isCompleted: false,
           icon: '🧪',
           rating: 4.8,
           playCount: 89,
           tags: ['chemistry', 'physics'],
+          questions: [
+            {
+              id: 'q1',
+              question: 'What gas do plants absorb during photosynthesis?',
+              options: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'],
+              correctAnswer: 1,
+              explanation: 'Plants absorb carbon dioxide and release oxygen during photosynthesis.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q2',
+              question: 'What is the largest planet in our solar system?',
+              options: ['Earth', 'Jupiter', 'Saturn', 'Mars'],
+              correctAnswer: 1,
+              explanation: 'Jupiter is the largest planet in our solar system.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q3',
+              question: 'Which organ pumps blood throughout the human body?',
+              options: ['Brain', 'Heart', 'Lungs', 'Liver'],
+              correctAnswer: 1,
+              explanation: 'The heart pumps blood throughout the human body.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q4',
+              question: 'What do we call animals that eat only plants?',
+              options: ['Carnivores', 'Herbivores', 'Omnivores', 'Predators'],
+              correctAnswer: 1,
+              explanation: 'Animals that eat only plants are called herbivores.',
+              type: 'blockblast',
+            },
+            {
+              id: 'q5',
+              question: 'How many bones are in an adult human body approximately?',
+              options: ['106', '156', '206', '256'],
+              correctAnswer: 2,
+              explanation: 'An adult human body has approximately 206 bones.',
+              type: 'blockblast',
+            }
+          ]
         },
         {
           id: 'game_3',
@@ -69,15 +153,49 @@ const GameSelection = ({ navigation }) => {
           subject: 'English',
           type: 'matching',
           difficulty: 'Easy',
-          totalQuestions: 12,
+          totalQuestions: 4,
           estimatedTime: '8-12 min',
           description: 'Improve your vocabulary with fun word matching',
-          isDownloaded: false,
+          isDownloaded: true,
           isCompleted: false,
           icon: '📚',
           rating: 4.3,
           playCount: 203,
           tags: ['vocabulary', 'words'],
+          questions: [
+            {
+              id: 'q1',
+              question: 'Which of these is a noun?',
+              options: ['Run', 'Beautiful', 'Cat', 'Quickly'],
+              correctAnswer: 2,
+              explanation: 'Cat is a noun because it names a thing (animal).',
+              type: 'matching',
+            },
+            {
+              id: 'q2',
+              question: 'What is the plural of "child"?',
+              options: ['Childs', 'Children', 'Childes', 'Child'],
+              correctAnswer: 1,
+              explanation: 'The plural of "child" is "children".',
+              type: 'matching',
+            },
+            {
+              id: 'q3',
+              question: 'Which word is an adjective?',
+              options: ['Sing', 'Happy', 'Book', 'Dance'],
+              correctAnswer: 1,
+              explanation: 'Happy is an adjective because it describes how someone feels.',
+              type: 'matching',
+            },
+            {
+              id: 'q4',
+              question: 'Complete: "She _____ to school every day."',
+              options: ['go', 'goes', 'going', 'gone'],
+              correctAnswer: 1,
+              explanation: 'With "she" (third person singular), we use "goes".',
+              type: 'matching',
+            }
+          ]
         },
         {
           id: 'game_4',
@@ -85,7 +203,7 @@ const GameSelection = ({ navigation }) => {
           subject: 'Mathematics',
           type: 'blockblast',
           difficulty: 'Hard',
-          totalQuestions: 20,
+          totalQuestions: 5,
           estimatedTime: '15-20 min',
           description: 'Challenge yourself with complex algebraic problems',
           isDownloaded: true,
@@ -94,6 +212,48 @@ const GameSelection = ({ navigation }) => {
           rating: 4.6,
           playCount: 67,
           tags: ['algebra', 'advanced'],
+          questions: [
+            {
+              id: 'q1',
+              question: 'Solve for x: 2x + 5 = 13',
+              options: ['3', '4', '5', '6'],
+              correctAnswer: 1,
+              explanation: '2x + 5 = 13, so 2x = 8, therefore x = 4',
+              type: 'blockblast',
+            },
+            {
+              id: 'q2',
+              question: 'What is x² if x = 7?',
+              options: ['14', '49', '21', '35'],
+              correctAnswer: 1,
+              explanation: '7² = 7 × 7 = 49',
+              type: 'blockblast',
+            },
+            {
+              id: 'q3',
+              question: 'Simplify: 3x + 2x',
+              options: ['5x', '6x', '5x²', '6x²'],
+              correctAnswer: 0,
+              explanation: '3x + 2x = (3+2)x = 5x',
+              type: 'blockblast',
+            },
+            {
+              id: 'q4',
+              question: 'If y = 2x + 3 and x = 4, what is y?',
+              options: ['9', '10', '11', '12'],
+              correctAnswer: 2,
+              explanation: 'y = 2(4) + 3 = 8 + 3 = 11',
+              type: 'blockblast',
+            },
+            {
+              id: 'q5',
+              question: 'Factor: x² + 5x + 6',
+              options: ['(x+2)(x+3)', '(x+1)(x+6)', '(x+4)(x+2)', '(x+5)(x+1)'],
+              correctAnswer: 0,
+              explanation: 'x² + 5x + 6 = (x+2)(x+3) because 2×3=6 and 2+3=5',
+              type: 'blockblast',
+            }
+          ]
         },
         {
           id: 'game_5',
@@ -101,7 +261,7 @@ const GameSelection = ({ navigation }) => {
           subject: 'Hindi',
           type: 'matching',
           difficulty: 'Medium',
-          totalQuestions: 14,
+          totalQuestions: 4,
           estimatedTime: '10-14 min',
           description: 'Discover famous Hindi poets and their works',
           isDownloaded: true,
@@ -110,6 +270,40 @@ const GameSelection = ({ navigation }) => {
           rating: 4.4,
           playCount: 156,
           tags: ['literature', 'poetry'],
+          questions: [
+            {
+              id: 'q1',
+              question: 'Who wrote "Godan"?',
+              options: ['Harivansh Rai Bachchan', 'Premchand', 'Maithili Sharan Gupt', 'Sumitranandan Pant'],
+              correctAnswer: 1,
+              explanation: '"Godan" is a famous novel written by Munshi Premchand.',
+              type: 'matching',
+            },
+            {
+              id: 'q2',
+              question: 'Which is the national song of India?',
+              options: ['Jana Gana Mana', 'Vande Mataram', 'Saare Jahan Se Achha', 'Iqbal'],
+              correctAnswer: 1,
+              explanation: '"Vande Mataram" is the national song of India.',
+              type: 'matching',
+            },
+            {
+              id: 'q3',
+              question: 'Who is known as "Rashtra Kavi"?',
+              options: ['Maithili Sharan Gupt', 'Harivansh Rai Bachchan', 'Sumitranandan Pant', 'Ramdhari Singh Dinkar'],
+              correctAnswer: 0,
+              explanation: 'Maithili Sharan Gupt is known as "Rashtra Kavi" (National Poet).',
+              type: 'matching',
+            },
+            {
+              id: 'q4',
+              question: 'Complete this line: "Saare jahan se ___"',
+              options: ['sundar', 'achha', 'pyara', 'mahaan'],
+              correctAnswer: 1,
+              explanation: 'The famous line is "Saare jahan se achha, Hindustan hamara".',
+              type: 'matching',
+            }
+          ]
         },
       ];
 
@@ -122,7 +316,7 @@ const GameSelection = ({ navigation }) => {
     }
   };
 
-  const filterGames = () => {
+  const filterGames = useCallback(() => {
     let filtered = games;
 
     // Filter by search query
@@ -145,7 +339,7 @@ const GameSelection = ({ navigation }) => {
     }
 
     setFilteredGames(filtered);
-  };
+  }, [games, searchQuery, selectedSubject, selectedDifficulty]);
 
   const handleGamePress = (game) => {
     if (!game.isDownloaded) {
@@ -162,9 +356,9 @@ const GameSelection = ({ navigation }) => {
 
     // Navigate to the appropriate game screen
     if (game.type === 'matching') {
-      navigation.navigate('MatchingGame', { game });
+      navigation.navigate('MatchingGame', { game, studentData });
     } else if (game.type === 'blockblast') {
-      navigation.navigate('BlockBlastGame', { game });
+      navigation.navigate('BlockBlastGame', { game, studentData });
     }
   };
 
