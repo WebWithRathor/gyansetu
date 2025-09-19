@@ -125,6 +125,12 @@ const MatchingGame = ({ navigation, route }) => {
       console.log('Card already matched, returning');
       return;
     }
+
+    // Add pressing animation
+    Animated.sequence([
+      Animated.timing(pulseAnim, { toValue: 0.95, duration: 100, useNativeDriver: true }),
+      Animated.timing(pulseAnim, { toValue: 1, duration: 100, useNativeDriver: true })
+    ]).start();
     
     if (card.type === 'question') {
       if (selectedQuestion?.id === card.id) {
@@ -347,16 +353,17 @@ const MatchingGame = ({ navigation, route }) => {
             <View style={styles.column}>
               <Text style={styles.columnTitle}>Questions</Text>
               {questions.map((question) => (
-                <TouchableOpacity
-                  key={question.id}
-                  style={getCardStyle(question)}
-                  onPress={() => handleCardPress(question)}
-                  disabled={question.matched}
-                >
-                  <Text style={styles.cardText} numberOfLines={3}>
-                    {question.text}
-                  </Text>
-                </TouchableOpacity>
+                <Animated.View key={question.id} style={{ transform: [{ scale: pulseAnim }] }}>
+                  <TouchableOpacity
+                    style={getCardStyle(question)}
+                    onPress={() => handleCardPress(question)}
+                    disabled={question.matched}
+                  >
+                    <Text style={styles.cardText} numberOfLines={3}>
+                      {question.text}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
               ))}
             </View>
             
@@ -364,16 +371,17 @@ const MatchingGame = ({ navigation, route }) => {
             <View style={styles.column}>
               <Text style={styles.columnTitle}>Answers</Text>
               {answers.map((answer) => (
-                <TouchableOpacity
-                  key={answer.id}
-                  style={getCardStyle(answer)}
-                  onPress={() => handleCardPress(answer)}
-                  disabled={answer.matched}
-                >
-                  <Text style={styles.cardText} numberOfLines={3}>
-                    {answer.text}
-                  </Text>
-                </TouchableOpacity>
+                <Animated.View key={answer.id} style={{ transform: [{ scale: pulseAnim }] }}>
+                  <TouchableOpacity
+                    style={getCardStyle(answer)}
+                    onPress={() => handleCardPress(answer)}
+                    disabled={answer.matched}
+                  >
+                    <Text style={styles.cardText} numberOfLines={3}>
+                      {answer.text}
+                    </Text>
+                  </TouchableOpacity>
+                </Animated.View>
               ))}
             </View>
           </View>
@@ -408,7 +416,7 @@ const MatchingGame = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#ffd29d',
   },
   
   errorContainer: {
@@ -453,10 +461,22 @@ const styles = StyleSheet.create({
   },
   
   gameInfo: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#e8f5e8',
+    borderRadius: 15,
     padding: SPACING.lg,
     marginBottom: SPACING.xl,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#28a745',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   infoRow: {
@@ -489,10 +509,22 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#e7f3ff',
+    borderRadius: 15,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#4a5bb8',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 15,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   scoreContainer: {
@@ -552,21 +584,29 @@ const styles = StyleSheet.create({
   
   feedbackContainer: {
     padding: SPACING.md,
-    borderRadius: 8,
+    borderRadius: 12,
     marginBottom: SPACING.md,
     alignItems: 'center',
+    borderWidth: 2,
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 10,
   },
   
   feedbackSuccess: {
-    backgroundColor: COLORS.success + '20',
-    borderColor: COLORS.success,
-    borderWidth: 1,
+    backgroundColor: '#e8f5e8',
+    borderColor: '#28a745',
+    shadowColor: '#28a745',
   },
   
   feedbackError: {
-    backgroundColor: COLORS.error + '20',
-    borderColor: COLORS.error,
-    borderWidth: 1,
+    backgroundColor: '#f8d7da',
+    borderColor: '#dc3545',
+    shadowColor: '#dc3545',
   },
   
   feedbackText: {
@@ -588,41 +628,63 @@ const styles = StyleSheet.create({
   
   columnTitle: {
     ...TEXT_STYLES.bodySmall,
-    color: COLORS.text,
-    fontWeight: '600',
+    color: '#ffffff',
+    fontWeight: '700',
     textAlign: 'center',
     marginBottom: SPACING.md,
     padding: SPACING.sm,
-    backgroundColor: COLORS.primary + '20',
-    borderRadius: 8,
+    backgroundColor: '#4a5bb8',
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#4a5bb8',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 6,
+    elevation: 8,
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   
   card: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 15,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
     borderWidth: 2,
-    borderColor: COLORS.border,
+    borderColor: '#000000ff',
     minHeight: 80,
     justifyContent: 'center',
-    shadowColor: COLORS.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+    shadowColor: '#6c757d',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 10,
+    elevation: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   cardSelected: {
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary + '10',
-    transform: [{ scale: 1.02 }],
+    borderColor: '#4a5bb8',
+    backgroundColor: '#e7f3ff',
+    shadowColor: '#4a5bb8',
+    transform: [{ scale: 1.05 }],
+    shadowOpacity: 0.4,
+    elevation: 18,
   },
   
   cardMatched: {
-    backgroundColor: COLORS.success + '20',
-    borderColor: COLORS.success,
-    opacity: 0.7,
+    backgroundColor: '#e8f5e8',
+    borderColor: '#28a745',
+    shadowColor: '#28a745',
+    opacity: 0.8,
   },
   
   cardText: {

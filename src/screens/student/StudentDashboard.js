@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Alert } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Card, Header, Button } from '../../components/common';
 import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
 import { useApp } from '../../context/AppContext';
 import ProgressStats from './ProgressStats';
+import StudentInfoCard from './StudentInfoCard';
 
 const StudentDashboard = ({ navigation }) => {
   const { studentData, logout } = useApp();
@@ -255,7 +255,7 @@ const StudentDashboard = ({ navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
+    <View style={styles.container}>
       <Header
         title="Student Dashboard"
         subtitle={`Welcome, ${studentData?.name || 'Student'}`}
@@ -270,26 +270,10 @@ const StudentDashboard = ({ navigation }) => {
       >
         <View style={styles.content}>
           {/* Student Info Card */}
-          <Card variant="student" style={styles.studentCard}>
-            <View style={styles.studentContent}>
-              <Text style={styles.studentIcon}>🎓</Text>
-              <View style={styles.studentInfo}>
-                <Text style={styles.studentName}>{studentData?.name}</Text>
-                <Text style={styles.studentDetails}>
-                  Grade {studentData?.grade} • {studentData?.className}
-                </Text>
-                <Text style={styles.studentSchool}>
-                  {studentData?.schoolName}
-                </Text>
-              </View>
-              <View style={styles.scoreContainer}>
-                <Text style={styles.scoreValue}>
-                  {dashboardData.totalScore}
-                </Text>
-                <Text style={styles.scoreLabel}>Total Score</Text>
-              </View>
-            </View>
-          </Card>
+          <StudentInfoCard 
+            studentData={studentData} 
+            totalScore={dashboardData.totalScore} 
+          />
 
           {/* Progress Stats */}
           <ProgressStats dashboardData={dashboardData} styles={styles} />
@@ -410,14 +394,14 @@ const StudentDashboard = ({ navigation }) => {
           </View>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#ffd29d',
   },
 
   scrollView: {
@@ -426,58 +410,6 @@ const styles = StyleSheet.create({
 
   content: {
     padding: SPACING.lg,
-  },
-
-  // Student Info Card
-  studentCard: {
-    marginBottom: SPACING.xl,
-  },
-
-  studentContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-
-  studentIcon: {
-    fontSize: 48,
-    marginRight: SPACING.lg,
-  },
-
-  studentInfo: {
-    flex: 1,
-  },
-
-  studentName: {
-    ...TEXT_STYLES.subtitle,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-
-  studentDetails: {
-    ...TEXT_STYLES.bodySmall,
-    color: COLORS.accent,
-    marginBottom: 2,
-  },
-
-  studentSchool: {
-    ...TEXT_STYLES.caption,
-    color: COLORS.textSecondary,
-  },
-
-  scoreContainer: {
-    alignItems: 'center',
-  },
-
-  scoreValue: {
-    ...TEXT_STYLES.title,
-    color: COLORS.accent,
-    marginBottom: SPACING.xs,
-  },
-
-  scoreLabel: {
-    ...TEXT_STYLES.caption,
-    color: COLORS.textSecondary,
   },
 
   // Stats Section
@@ -505,36 +437,7 @@ const styles = StyleSheet.create({
   statsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'start',
-  },
-
-  statCard: {
-    width: '47%',
-    height: 120,
-    backgroundColor: 'skyblue',
-    marginHorizontal: SPACING.xs,
-  },
-
-  statContent: {
-    alignItems: 'center',
-    padding: SPACING.lg,
-  },
-
-  statIcon: {
-    fontSize: 32,
-    marginBottom: SPACING.sm,
-  },
-
-  statValue: {
-    ...TEXT_STYLES.title,
-    color: COLORS.text,
-    marginBottom: SPACING.xs,
-  },
-
-  statLabel: {
-    ...TEXT_STYLES.caption,
-    color: COLORS.textSecondary,
-    textAlign: 'center',
+    justifyContent: 'space-between',
   },
 
   // Games Section

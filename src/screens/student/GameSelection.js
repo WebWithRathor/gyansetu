@@ -578,7 +578,7 @@ const GameSelection = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#ffd29d',
   },
   
   scrollView: {

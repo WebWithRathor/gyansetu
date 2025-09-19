@@ -49,6 +49,7 @@ const BlockBlastGame = ({ navigation, route }) => {
   // Animation values
   const scoreAnim = useRef(new Animated.Value(1)).current;
   const gridAnim = useRef(new Animated.Value(1)).current;
+  const blockAnim = useRef(new Animated.Value(1)).current;
   
   // Initialize game
   const initializeGame = useCallback(() => {
@@ -306,42 +307,52 @@ const BlockBlastGame = ({ navigation, route }) => {
   
   const renderBlocks = () => {
     return currentBlocks.map((block, index) => (
-      <TouchableOpacity 
-        key={block.id} 
-        style={styles.blockContainer}
-        onPress={() => {
-          if (!block.used) {
-            setSelectedBlockId(block.id);
-          }
-        }}
-        disabled={block.used}
+      <Animated.View 
+        key={block.id}
+        style={{ transform: [{ scale: blockAnim }] }}
       >
-        <Text style={styles.blockLabel}>Block {index + 1}</Text>
-        <View style={[
-          styles.blockPreview, 
-          block.used && styles.blockUsed,
-          selectedBlockId === block.id && !block.used && styles.blockSelected
-        ]}>
-          {block.shape.map((row, rowIndex) => (
-            <View key={rowIndex} style={styles.blockRow}>
-              {row.map((cell, colIndex) => {
-                const cellStyle = [
-                  styles.blockCell,
-                  cell ? { backgroundColor: block.color } : styles.blockCellEmpty,
-                  block.used && styles.blockCellUsed
-                ];
-                
-                return (
-                  <View
-                    key={`${rowIndex}-${colIndex}`}
-                    style={cellStyle}
-                  />
-                );
-              })}
-            </View>
-          ))}
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity 
+          style={styles.blockContainer}
+          onPress={() => {
+            if (!block.used) {
+              // Add pressing animation
+              Animated.sequence([
+                Animated.timing(blockAnim, { toValue: 0.95, duration: 100, useNativeDriver: true }),
+                Animated.timing(blockAnim, { toValue: 1, duration: 100, useNativeDriver: true })
+              ]).start();
+              
+              setSelectedBlockId(block.id);
+            }
+          }}
+          disabled={block.used}
+        >
+          <Text style={styles.blockLabel}>Block {index + 1}</Text>
+          <View style={[
+            styles.blockPreview, 
+            block.used && styles.blockUsed,
+            selectedBlockId === block.id && !block.used && styles.blockSelected
+          ]}>
+            {block.shape.map((row, rowIndex) => (
+              <View key={rowIndex} style={styles.blockRow}>
+                {row.map((cell, colIndex) => {
+                  const cellStyle = [
+                    styles.blockCell,
+                    cell ? { backgroundColor: block.color } : styles.blockCellEmpty,
+                    block.used && styles.blockCellUsed
+                  ];
+                  
+                  return (
+                    <View
+                      key={`${rowIndex}-${colIndex}`}
+                      style={cellStyle}
+                    />
+                  );
+                })}
+              </View>
+            ))}
+          </View>
+        </TouchableOpacity>
+      </Animated.View>
     ));
   };
   
@@ -505,7 +516,7 @@ const BlockBlastGame = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#ffd29d',
   },
   
   errorContainer: {
@@ -550,10 +561,22 @@ const styles = StyleSheet.create({
   },
   
   gameInfo: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#e7f3ff',
+    borderRadius: 15,
     padding: SPACING.lg,
     marginBottom: SPACING.xl,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#4a5bb8',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 12,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   infoRow: {
@@ -585,10 +608,22 @@ const styles = StyleSheet.create({
   statsContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#e8f5e8',
+    borderRadius: 15,
     padding: SPACING.md,
     marginBottom: SPACING.lg,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#28a745',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 15,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   statItem: {
@@ -609,11 +644,23 @@ const styles = StyleSheet.create({
   },
   
   gridContainer: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#fff3cd',
+    borderRadius: 15,
     padding: SPACING.sm,
     marginBottom: SPACING.lg,
     alignItems: 'center',
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#ffc107',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 15,
+    position: 'relative',
+    overflow: 'hidden',
   },
   
   gridRow: {
@@ -624,22 +671,45 @@ const styles = StyleSheet.create({
     width: 35,
     height: 35,
     margin: 1,
-    borderRadius: 4,
+    borderRadius: 6,
     borderWidth: 1,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 3,
   },
   
   gridCellFilled: {
-    borderColor: 'transparent',
+    borderColor: '#000000ff',
+    borderWidth: 2,
   },
   
   gridCellEmpty: {
-    borderColor: COLORS.border,
+    borderColor: '#dee2e6',
+    backgroundColor: '#ffffff',
   },
   
   blocksContainer: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 12,
+    backgroundColor: '#f8d7da',
+    borderRadius: 15,
     padding: SPACING.md,
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowColor: '#dc3545',
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 10,
+    elevation: 12,
+    position: 'relative',
+    overflow: 'hidden',
+    height: 180,
   },
   
   blocksTitle: {
@@ -667,19 +737,34 @@ const styles = StyleSheet.create({
   },
   
   blockPreview: {
-    backgroundColor: COLORS.background,
-    borderRadius: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 10,
     padding: SPACING.sm,
+    borderWidth: 2,
+    borderColor: '#6c757d',
+    shadowColor: '#6c757d',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
   },
   
   blockUsed: {
-    opacity: 0.3,
+    opacity: 0.4,
+    backgroundColor: '#e9ecef',
   },
   
   blockSelected: {
-    borderWidth: 2,
-    borderColor: COLORS.primary,
-    backgroundColor: COLORS.primary + '10',
+    borderWidth: 3,
+    borderColor: '#4a5bb8',
+    backgroundColor: '#e7f3ff',
+    shadowColor: '#4a5bb8',
+    shadowOpacity: 0.4,
+    elevation: 12,
+    transform: [{ scale: 1.05 }],
   },
   
   blockRow: {
@@ -728,12 +813,20 @@ const styles = StyleSheet.create({
   },
   
   optionButton: {
-    backgroundColor: COLORS.surface,
-    borderRadius: 8,
+    backgroundColor: '#f8f9fa',
+    borderRadius: 12,
     padding: SPACING.md,
     marginBottom: SPACING.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    borderWidth: 2,
+    borderColor: '#6c757d',
+    shadowColor: '#6c757d',
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 8,
   },
   
   optionText: {

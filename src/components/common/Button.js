@@ -1,7 +1,7 @@
 import React from 'react';
-import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View } from 'react-native';
+import { TouchableOpacity, Text, StyleSheet, ActivityIndicator, View, Animated } from 'react-native';
 import { COLORS } from '../../constants/colors';
-import { SPACING, BORDER_RADIUS, SHADOWS } from '../../constants/layout';
+import { SPACING, BORDER_RADIUS } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
 
 const Button = ({
@@ -18,6 +18,26 @@ const Button = ({
   textStyle,
   ...props
 }) => {
+  const scaleValue = React.useRef(new Animated.Value(1)).current;
+
+  const handlePressIn = () => {
+    Animated.spring(scaleValue, {
+      toValue: 0.95,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 50,
+    }).start();
+  };
+
+  const handlePressOut = () => {
+    Animated.spring(scaleValue, {
+      toValue: 1,
+      useNativeDriver: true,
+      tension: 300,
+      friction: 50,
+    }).start();
+  };
+
   const getButtonStyle = () => {
     const baseStyle = [styles.button];
     
@@ -159,15 +179,23 @@ const Button = ({
   };
   
   return (
-    <TouchableOpacity
-      style={getButtonStyle()}
-      onPress={onPress}
-      disabled={disabled || loading}
-      activeOpacity={0.7}
-      {...props}
-    >
-      {renderContent()}
-    </TouchableOpacity>
+    <Animated.View style={{ transform: [{ scale: scaleValue }] }}>
+      <TouchableOpacity
+        style={getButtonStyle()}
+        onPress={onPress}
+        onPressIn={handlePressIn}
+        onPressOut={handlePressOut}
+        disabled={disabled || loading}
+        activeOpacity={0.9}
+        {...props}
+      >
+        {/* Inner highlight overlay for 3D effect */}
+        <View style={styles.highlight} />
+        {renderContent()}
+        {/* Inner shadow for depth */}
+        <View style={styles.innerShadow} />
+      </TouchableOpacity>
+    </Animated.View>
   );
 };
 
@@ -177,7 +205,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-    ...SHADOWS.small,
+    position: 'relative',
+    overflow: 'hidden',
+    borderWidth: 2,
+    borderColor: '#000000ff',
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 12,
+    elevation: 15,
   },
   
   // Size styles
@@ -199,27 +237,35 @@ const styles = StyleSheet.create({
   
   // Variant styles
   buttonPrimary: {
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#4a5bb8',
+    shadowColor: '#4a5bb8',
   },
   buttonSecondary: {
-    backgroundColor: COLORS.secondary,
+    backgroundColor: '#6c757d',
+    shadowColor: '#6c757d',
   },
   buttonSuccess: {
-    backgroundColor: COLORS.success,
+    backgroundColor: '#28a745',
+    shadowColor: '#28a745',
   },
   buttonError: {
-    backgroundColor: COLORS.error,
+    backgroundColor: '#dc3545',
+    shadowColor: '#dc3545',
   },
   buttonWarning: {
-    backgroundColor: COLORS.warning,
+    backgroundColor: '#ffc107',
+    shadowColor: '#ffc107',
   },
   buttonOutline: {
     backgroundColor: COLORS.transparent,
-    borderWidth: 2,
-    borderColor: COLORS.primary,
+    borderWidth: 3,
+    borderColor: '#4a5bb8',
+    shadowColor: '#4a5bb8',
   },
   buttonGhost: {
     backgroundColor: COLORS.transparent,
+    borderWidth: 0,
+    shadowColor: '#4a5bb8',
   },
   
   // State styles
@@ -248,25 +294,42 @@ const styles = StyleSheet.create({
   
   // Variant text styles
   buttonTextPrimary: {
-    color: COLORS.background,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   buttonTextSecondary: {
-    color: COLORS.background,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   buttonTextSuccess: {
-    color: COLORS.background,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   buttonTextError: {
-    color: COLORS.background,
+    color: '#ffffff',
+    textShadowColor: 'rgba(0, 0, 0, 0.3)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   buttonTextWarning: {
-    color: COLORS.background,
+    color: '#000000',
+    textShadowColor: 'rgba(255, 255, 255, 0.5)',
+    textShadowOffset: { width: 0, height: 1 },
+    textShadowRadius: 2,
   },
   buttonTextOutline: {
-    color: COLORS.primary,
+    color: '#4a5bb8',
+    fontWeight: 'bold',
   },
   buttonTextGhost: {
-    color: COLORS.primary,
+    color: '#4a5bb8',
+    fontWeight: 'bold',
   },
   buttonTextDisabled: {
     color: COLORS.textSecondary,
@@ -285,6 +348,31 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginLeft: SPACING.sm,
+  },
+
+  // 3D Effect styles
+  highlight: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '50%',
+    backgroundColor: 'rgba(255, 255, 255, 0.2)',
+    zIndex: 1,
+    borderTopLeftRadius: BORDER_RADIUS.md - 2,
+    borderTopRightRadius: BORDER_RADIUS.md - 2,
+  },
+
+  innerShadow: {
+    position: 'absolute',
+    bottom: 0,
+    left: 0,
+    right: 0,
+    height: '30%',
+    backgroundColor: 'rgba(0, 0, 0, 0.1)',
+    zIndex: 1,
+    borderBottomLeftRadius: BORDER_RADIUS.md - 2,
+    borderBottomRightRadius: BORDER_RADIUS.md - 2,
   },
 });
 
