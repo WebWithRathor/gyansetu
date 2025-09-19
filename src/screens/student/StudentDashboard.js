@@ -6,6 +6,7 @@ import { COLORS } from '../../constants/colors';
 import { SPACING } from '../../constants/layout';
 import { TEXT_STYLES } from '../../constants/typography';
 import { useApp } from '../../context/AppContext';
+import ProgressStats from './ProgressStats';
 
 const StudentDashboard = ({ navigation }) => {
   const { studentData, logout } = useApp();
@@ -15,11 +16,11 @@ const StudentDashboard = ({ navigation }) => {
     totalScore: 0,
     badges: [],
   });
-  
+
   useEffect(() => {
     loadDashboardData();
   }, []);
-  
+
   const loadDashboardData = async () => {
     try {
       // Mock data with complete game questions for testing
@@ -75,8 +76,8 @@ const StudentDashboard = ({ navigation }) => {
               correctAnswer: 1,
               explanation: 'This is an even number sequence, so 10 comes next.',
               type: 'matching',
-            }
-          ]
+            },
+          ],
         },
         {
           id: 'game_2',
@@ -96,7 +97,8 @@ const StudentDashboard = ({ navigation }) => {
               question: 'What gas do plants absorb during photosynthesis?',
               options: ['Oxygen', 'Carbon Dioxide', 'Nitrogen', 'Hydrogen'],
               correctAnswer: 1,
-              explanation: 'Plants absorb carbon dioxide and release oxygen during photosynthesis.',
+              explanation:
+                'Plants absorb carbon dioxide and release oxygen during photosynthesis.',
               type: 'blockblast',
             },
             {
@@ -120,18 +122,20 @@ const StudentDashboard = ({ navigation }) => {
               question: 'What do we call animals that eat only plants?',
               options: ['Carnivores', 'Herbivores', 'Omnivores', 'Predators'],
               correctAnswer: 1,
-              explanation: 'Animals that eat only plants are called herbivores.',
+              explanation:
+                'Animals that eat only plants are called herbivores.',
               type: 'blockblast',
             },
             {
               id: 'q5',
-              question: 'How many bones are in an adult human body approximately?',
+              question:
+                'How many bones are in an adult human body approximately?',
               options: ['106', '156', '206', '256'],
               correctAnswer: 2,
               explanation: 'An adult human body has approximately 206 bones.',
               type: 'blockblast',
-            }
-          ]
+            },
+          ],
         },
         {
           id: 'game_3',
@@ -166,7 +170,8 @@ const StudentDashboard = ({ navigation }) => {
               question: 'Which word is an adjective?',
               options: ['Sing', 'Happy', 'Book', 'Dance'],
               correctAnswer: 1,
-              explanation: 'Happy is an adjective because it describes how someone feels.',
+              explanation:
+                'Happy is an adjective because it describes how someone feels.',
               type: 'matching',
             },
             {
@@ -176,15 +181,18 @@ const StudentDashboard = ({ navigation }) => {
               correctAnswer: 1,
               explanation: 'With "she" (third person singular), we use "goes".',
               type: 'matching',
-            }
-          ]
+            },
+          ],
         },
       ];
-      
+
       const available = mockGames.filter(game => !game.isCompleted);
       const completed = mockGames.filter(game => game.isCompleted);
-      const totalScore = completed.reduce((sum, game) => sum + (game.score || 0), 0);
-      
+      const totalScore = completed.reduce(
+        (sum, game) => sum + (game.score || 0),
+        0,
+      );
+
       setDashboardData({
         availableGames: available,
         completedGames: completed,
@@ -195,57 +203,57 @@ const StudentDashboard = ({ navigation }) => {
       console.error('Error loading dashboard data:', error);
     }
   };
-  
+
   const handleLogout = () => {
-    Alert.alert(
-      'Logout',
-      'Are you sure you want to logout?',
-      [
-        { text: 'Cancel', style: 'cancel' },
-        { 
-          text: 'Logout', 
-          style: 'destructive',
-          onPress: () => {
-            logout();
-            navigation.replace('UserTypeSelection');
-          }
+    Alert.alert('Logout', 'Are you sure you want to logout?', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Logout',
+        style: 'destructive',
+        onPress: () => {
+          logout();
+          navigation.replace('UserTypeSelection');
         },
-      ]
-    );
+      },
+    ]);
   };
-  
-  const handleGamePress = (game) => {
+
+  const handleGamePress = game => {
     if (!game.isDownloaded) {
       Alert.alert(
         'Game Not Available',
         'This game needs to be downloaded. Please connect to internet to download.',
-        [{ text: 'OK' }]
+        [{ text: 'OK' }],
       );
       return;
     }
-    
+
     if (game.type === 'matching') {
-      navigation.navigate('MatchingGame', { 
+      navigation.navigate('MatchingGame', {
         game: game,
-        studentData: studentData 
+        studentData: studentData,
       });
     } else if (game.type === 'blockblast') {
-      navigation.navigate('BlockBlastGame', { 
+      navigation.navigate('BlockBlastGame', {
         game: game,
-        studentData: studentData 
+        studentData: studentData,
       });
     }
   };
-  
-  const getDifficultyColor = (difficulty) => {
+
+  const getDifficultyColor = difficulty => {
     switch (difficulty) {
-      case 'Easy': return COLORS.success;
-      case 'Medium': return COLORS.warning;
-      case 'Hard': return COLORS.error;
-      default: return COLORS.textSecondary;
+      case 'Easy':
+        return COLORS.success;
+      case 'Medium':
+        return COLORS.warning;
+      case 'Hard':
+        return COLORS.error;
+      default:
+        return COLORS.textSecondary;
     }
   };
-  
+
   return (
     <SafeAreaView style={styles.container}>
       <Header
@@ -255,8 +263,11 @@ const StudentDashboard = ({ navigation }) => {
         rightIcon={<Text style={styles.logoutIcon}>👋</Text>}
         onRightPress={handleLogout}
       />
-      
-      <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+      >
         <View style={styles.content}>
           {/* Student Info Card */}
           <Card variant="student" style={styles.studentCard}>
@@ -267,45 +278,22 @@ const StudentDashboard = ({ navigation }) => {
                 <Text style={styles.studentDetails}>
                   Grade {studentData?.grade} • {studentData?.className}
                 </Text>
-                <Text style={styles.studentSchool}>{studentData?.schoolName}</Text>
+                <Text style={styles.studentSchool}>
+                  {studentData?.schoolName}
+                </Text>
               </View>
               <View style={styles.scoreContainer}>
-                <Text style={styles.scoreValue}>{dashboardData.totalScore}</Text>
+                <Text style={styles.scoreValue}>
+                  {dashboardData.totalScore}
+                </Text>
                 <Text style={styles.scoreLabel}>Total Score</Text>
               </View>
             </View>
           </Card>
-          
+
           {/* Progress Stats */}
-          <View style={styles.statsSection}>
-            <Text style={styles.sectionTitle}>Your Progress</Text>
-            <View style={styles.statsRow}>
-              <Card style={styles.statCard} elevation="low">
-                <View style={styles.statContent}>
-                  <Text style={styles.statIcon}>🎮</Text>
-                  <Text style={styles.statValue}>{dashboardData.availableGames.length}</Text>
-                  <Text style={styles.statLabel}>Available</Text>
-                </View>
-              </Card>
-              
-              <Card style={styles.statCard} elevation="low">
-                <View style={styles.statContent}>
-                  <Text style={styles.statIcon}>✅</Text>
-                  <Text style={styles.statValue}>{dashboardData.completedGames.length}</Text>
-                  <Text style={styles.statLabel}>Completed</Text>
-                </View>
-              </Card>
-              
-              <Card style={styles.statCard} elevation="low">
-                <View style={styles.statContent}>
-                  <Text style={styles.statIcon}>🏆</Text>
-                  <Text style={styles.statValue}>{dashboardData.badges.length}</Text>
-                  <Text style={styles.statLabel}>Badges</Text>
-                </View>
-              </Card>
-            </View>
-          </View>
-          
+          <ProgressStats dashboardData={dashboardData} styles={styles} />
+
           {/* Available Games */}
           <View style={styles.gamesSection}>
             <View style={styles.sectionHeader}>
@@ -319,7 +307,7 @@ const StudentDashboard = ({ navigation }) => {
               />
             </View>
             {dashboardData.availableGames.length > 0 ? (
-              dashboardData.availableGames.map((game) => (
+              dashboardData.availableGames.map(game => (
                 <Card
                   key={game.id}
                   onPress={() => handleGamePress(game)}
@@ -332,16 +320,25 @@ const StudentDashboard = ({ navigation }) => {
                       <Text style={styles.gameTitle}>{game.title}</Text>
                       <Text style={styles.gameSubject}>{game.subject}</Text>
                       <View style={styles.gameDetails}>
-                        <Text 
-                          style={[styles.gameDifficulty, { color: getDifficultyColor(game.difficulty) }]}
+                        <Text
+                          style={[
+                            styles.gameDifficulty,
+                            { color: getDifficultyColor(game.difficulty) },
+                          ]}
                         >
                           {game.difficulty}
                         </Text>
-                        <Text style={styles.gameTime}>• {game.estimatedTime}</Text>
-                        <Text style={styles.gameQuestions}>• {game.totalQuestions} questions</Text>
+                        <Text style={styles.gameTime}>
+                          • {game.estimatedTime}
+                        </Text>
+                        <Text style={styles.gameQuestions}>
+                          • {game.totalQuestions} questions
+                        </Text>
                       </View>
                       {!game.isDownloaded && (
-                        <Text style={styles.downloadRequired}>📱 Download required</Text>
+                        <Text style={styles.downloadRequired}>
+                          📱 Download required
+                        </Text>
                       )}
                     </View>
                     <View style={styles.gameAction}>
@@ -362,12 +359,12 @@ const StudentDashboard = ({ navigation }) => {
               </Card>
             )}
           </View>
-          
+
           {/* Completed Games */}
           {dashboardData.completedGames.length > 0 && (
             <View style={styles.completedSection}>
               <Text style={styles.sectionTitle}>Completed Games</Text>
-              {dashboardData.completedGames.map((game) => (
+              {dashboardData.completedGames.map(game => (
                 <Card
                   key={game.id}
                   onPress={() => handleGamePress(game)}
@@ -379,7 +376,9 @@ const StudentDashboard = ({ navigation }) => {
                     <View style={styles.gameInfo}>
                       <Text style={styles.gameTitle}>{game.title}</Text>
                       <Text style={styles.gameSubject}>{game.subject}</Text>
-                      <Text style={styles.completedScore}>Score: {game.score}%</Text>
+                      <Text style={styles.completedScore}>
+                        Score: {game.score}%
+                      </Text>
                     </View>
                     <View style={styles.gameAction}>
                       <Text style={styles.replayIcon}>🔄</Text>
@@ -389,7 +388,7 @@ const StudentDashboard = ({ navigation }) => {
               ))}
             </View>
           )}
-          
+
           {/* Badges Section */}
           <View style={styles.badgesSection}>
             <Text style={styles.sectionTitle}>Your Badges</Text>
@@ -397,10 +396,14 @@ const StudentDashboard = ({ navigation }) => {
               <View style={styles.badgesContent}>
                 {dashboardData.badges.length > 0 ? (
                   dashboardData.badges.map((badge, index) => (
-                    <Text key={index} style={styles.badge}>{badge}</Text>
+                    <Text key={index} style={styles.badge}>
+                      {badge}
+                    </Text>
                   ))
                 ) : (
-                  <Text style={styles.noBadges}>Complete games to earn badges!</Text>
+                  <Text style={styles.noBadges}>
+                    Complete games to earn badges!
+                  </Text>
                 )}
               </View>
             </Card>
@@ -416,237 +419,237 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: COLORS.background,
   },
-  
+
   scrollView: {
     flex: 1,
   },
-  
+
   content: {
     padding: SPACING.lg,
   },
-  
+
   // Student Info Card
   studentCard: {
     marginBottom: SPACING.xl,
   },
-  
+
   studentContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.lg,
   },
-  
+
   studentIcon: {
     fontSize: 48,
     marginRight: SPACING.lg,
   },
-  
+
   studentInfo: {
     flex: 1,
   },
-  
+
   studentName: {
     ...TEXT_STYLES.subtitle,
     color: COLORS.text,
     marginBottom: SPACING.xs,
   },
-  
+
   studentDetails: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.accent,
     marginBottom: 2,
   },
-  
+
   studentSchool: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
   },
-  
+
   scoreContainer: {
     alignItems: 'center',
   },
-  
+
   scoreValue: {
     ...TEXT_STYLES.title,
     color: COLORS.accent,
     marginBottom: SPACING.xs,
   },
-  
+
   scoreLabel: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
   },
-  
+
   // Stats Section
   statsSection: {
     marginBottom: SPACING.xl,
   },
-  
+
   sectionTitle: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
     marginBottom: SPACING.lg,
   },
-  
+
   sectionHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     marginBottom: SPACING.lg,
   },
-  
+
   viewAllButton: {
     paddingHorizontal: 0,
   },
-  
+
   statsRow: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'start',
   },
-  
+
   statCard: {
-    width:"47%",
+    width: '47%',
     height: 120,
-    backgroundColor:"skyblue",
+    backgroundColor: 'skyblue',
     marginHorizontal: SPACING.xs,
   },
-  
+
   statContent: {
     alignItems: 'center',
     padding: SPACING.lg,
   },
-  
+
   statIcon: {
     fontSize: 32,
     marginBottom: SPACING.sm,
   },
-  
+
   statValue: {
     ...TEXT_STYLES.title,
     color: COLORS.text,
     marginBottom: SPACING.xs,
   },
-  
+
   statLabel: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  
+
   // Games Section
   gamesSection: {
     marginBottom: SPACING.xl,
   },
-  
+
   gameCard: {
     marginBottom: SPACING.md,
   },
-  
+
   gameContent: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: SPACING.lg,
   },
-  
+
   gameIcon: {
     fontSize: 40,
     marginRight: SPACING.lg,
   },
-  
+
   gameInfo: {
     flex: 1,
   },
-  
+
   gameTitle: {
     ...TEXT_STYLES.heading,
     color: COLORS.text,
     marginBottom: SPACING.xs,
   },
-  
+
   gameSubject: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.accent,
     marginBottom: SPACING.sm,
   },
-  
+
   gameDetails: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
   },
-  
+
   gameDifficulty: {
     ...TEXT_STYLES.caption,
     fontWeight: '600',
   },
-  
+
   gameTime: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
   },
-  
+
   gameQuestions: {
     ...TEXT_STYLES.caption,
     color: COLORS.textSecondary,
   },
-  
+
   downloadRequired: {
     ...TEXT_STYLES.caption,
     color: COLORS.warning,
     marginTop: SPACING.xs,
   },
-  
+
   gameAction: {
     padding: SPACING.sm,
   },
-  
+
   playIcon: {
     fontSize: 24,
   },
-  
+
   replayIcon: {
     fontSize: 20,
   },
-  
+
   // Completed Games
   completedSection: {
     marginBottom: SPACING.xl,
   },
-  
+
   completedGameCard: {
     marginBottom: SPACING.sm,
     opacity: 0.8,
   },
-  
+
   completedScore: {
     ...TEXT_STYLES.bodySmall,
     color: COLORS.success,
     fontWeight: '600',
   },
-  
+
   // Empty States
   emptyGames: {
     alignItems: 'center',
     padding: SPACING.xl,
   },
-  
+
   emptyGamesIcon: {
     fontSize: 48,
     marginBottom: SPACING.lg,
   },
-  
+
   emptyGamesText: {
     ...TEXT_STYLES.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  
+
   // Badges Section
   badgesSection: {
     marginBottom: SPACING.xl,
   },
-  
+
   badgesContent: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -654,18 +657,18 @@ const styles = StyleSheet.create({
     padding: SPACING.lg,
     flexWrap: 'wrap',
   },
-  
+
   badge: {
     fontSize: 32,
     marginHorizontal: SPACING.sm,
   },
-  
+
   noBadges: {
     ...TEXT_STYLES.body,
     color: COLORS.textSecondary,
     textAlign: 'center',
   },
-  
+
   // Header Icons
   logoutIcon: {
     fontSize: 24,
